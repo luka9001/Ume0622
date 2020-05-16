@@ -1,7 +1,8 @@
 const serverConfig = {
     env: "prod", //dev:开发环境，prod:生成环境
     // host: "http://58.211.183.34:30080",
-    host: "http://192.168.5.127:8000",
+    // host: "http://192.168.200.103:8000",
+    host: "http://u.qianyuanume.com:28888",
     version: "v1.0",
     header: {"Accept": "application/json", "content-type": "application/json"},
     // header_multipart: {

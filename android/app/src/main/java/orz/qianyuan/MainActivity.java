@@ -1,4 +1,4 @@
-package com.ume0622;
+package orz.qianyuan;
 
 import com.facebook.react.ReactActivity;
 

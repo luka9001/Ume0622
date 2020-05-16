@@ -44,7 +44,7 @@
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>App需要您的同意,才能访问您的位置,向您推荐位于附近的会员。</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string/>
+	<string></string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>App需要您的同意,才能访问麦克风,用于发送语音信息。</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>

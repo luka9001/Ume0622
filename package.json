@@ -11,7 +11,12 @@
   },
   "dependencies": {
     "@ant-design/react-native": "^3.3.0",
+    "@react-native-community/cameraroll": "^1.6.2",
     "@react-native-community/masked-view": "^0.1.10",
+    "@react-native-community/picker": "^1.5.0",
+    "@react-native-community/segmented-control": "^1.6.1",
+    "@react-native-community/slider": "^2.0.9",
+    "@react-native-community/viewpager": "^4.0.0",
     "@react-navigation/bottom-tabs": "^5.4.4",
     "@react-navigation/native": "^5.3.2",
     "@react-navigation/stack": "^5.3.5",

@@ -14,7 +14,7 @@ module.exports = {
     currentChattingUsername: null, // 记录当前正在与谁聊天
     currentChattingType: 'single', // 记录当前正在聊天的类型（单聊or群聊）
     JMessageCount: false,
-    AndroidVersion: 53,
-    IosVersion: 53,
+    AndroidVersion: 54,
+    IosVersion: 54,
     IsHuawei: false
 };

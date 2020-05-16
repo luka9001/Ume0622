@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import config from '../service/config';
 import {RecyclerListView, LayoutProvider, DataProvider} from 'recyclerlistview';
-import {Icon, Divider} from 'react-native-elements';
+import {Icon, Divider, ListItem} from 'react-native-elements';
 import {
     Text,
     View,
@@ -13,9 +13,19 @@ import {
     RefreshControl,
     PixelRatio,
     SafeAreaView,
-    FlatList
+    FlatList, ScrollView, TextInput,
 } from 'react-native';
-import {Modal, Toast, Provider, SearchBar, Tabs, TabBar} from '@ant-design/react-native';
+import {
+    Modal,
+    Toast,
+    Provider,
+    SearchBar,
+    Tabs,
+    TabBar,
+    Picker,
+    DatePicker,
+    TextareaItem,
+} from '@ant-design/react-native';
 import api from '../service/allMembersApi';
 import Global from '../util/Global';
 import CommonTitleBar from '../views/CommonTitleBar';
@@ -24,6 +34,9 @@ import Request from '../service/request';
 import Utils from '../util/Utils';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import {InputItem, SelectItem} from '../views/ItemView';
+import GlobalStyles from '../styles/Styles';
 
 let {width} = Dimensions.get('window');
 const url = config.host;
@@ -52,6 +65,10 @@ class Index extends Component {
             moreAutoFocus: false,
             moreVisible: true,
             selectedTab: 0,//选中tab的index
+            page: 1,
+            totalPage: 2,
+            firstBtnImg:require("../images/party.png"),
+            secondBtnImg:require("../images/publish_party_outline.png")
         };
         this.dataProvider = new DataProvider((r1, r2) => {
             return r1 !== r2;
@@ -68,10 +85,8 @@ class Index extends Component {
         this.getMySignUpPartyList();
     }
 
-    keyExtractor = (item, index) => index.toString();
-
     // renderItem = (type, data) => {
-    renderItem =   ({item, index, separators})=>{
+    renderItem = ({item, index, separators}) => {
         const text = {
             fontSize: 12,
             color: '#969696',
@@ -351,204 +366,127 @@ class Index extends Component {
         }
     }
 
-    renderContent(pageText) {
-        return (
-            <View style={{flex: 1, alignItems: 'center', backgroundColor: 'white'}}>
-                <SearchBar placeholder="Search" showCancelButton/>
-                <Text style={{margin: 50}}>{pageText}</Text>
-            </View>
-        );
-    }
-
-    onChangeTab(tabName) {
-        this.setState({
-            selectedTab: tabName,
-        });
-    }
-
     _keyExtractor = (item, index) => 'list-item-' + index;
 
-    HomeScreen = () => {
-        return (
-                <FlatList
-                    style={{flex:1}}
-                    data={this.state.infoList}
-                    renderItem={this.renderItem}
-                    keyExtractor={this._keyExtractor}
-                    extraData={this.state}
-                    onEndReached={this._onLoadMore}
-                    onEndReachedThreshold={50}
-                    ListFooterComponent={this._renderFooter}
-                    refreshing={this.state.loading}
-                    onRefresh={() => {
-                        this.getMySignUpPartyList();
-                    }}
-                />
-                // {/*<RecyclerListView*/}
-                // {/*    style={{width: width, backgroundColor: Global.pageBackgroundColor}}*/}
-                // {/*    forceNonDeterministicRendering*/}
-                // {/*    layoutProvider={this._layoutProvider}*/}
-                // {/*    dataProvider={this.dataProvider.cloneWithRows(this.state.infoList)}*/}
-                // {/*    rowRenderer={this.renderItem}*/}
-                // {/*    extendedState={this.state}*/}
-                // {/*    onEndReached={this._onLoadMore}*/}
-                // {/*    renderFooter={this._renderFooter}*/}
-                // {/*    onEndReachedThreshold={50}*/}
-                // {/*    scrollViewProps={{*/}
-                // {/*        refreshControl: (*/}
-                // {/*            <RefreshControl*/}
-                // {/*                refreshing={this.state.loading}*/}
-                // {/*                onRefresh={async () => {*/}
-                // {/*                    this.setState({loading: true});*/}
-                // {/*                    await this.getMySignUpPartyList();*/}
-                // {/*                }}*/}
-                // {/*            />*/}
-                // {/*        ),*/}
-                // {/*    }}*/}
-                // {/*/>*/}
-        );
-    };
+    lastPage() {
+        if (this.state.page !== 1) {
+            let currentPage = this.state.page;
+            this.setState({
+                page: --currentPage,
+                firstBtnImg:require('../images/party.png'),
+                secondBtnImg:require('../images/publish_party_outline.png'),
+                visible:true
+            });
+            let currentWidth = currentPage * width;
+            this.pagination.scrollTo({x: currentWidth - width, y: 0, animated: true});
+            this.getMySignUpPartyList();
+        }
+    }
 
-    SettingsScreen = () => {
-        return (
-                <RecyclerListView
-                    style={{flex:1}}
-                    forceNonDeterministicRendering
-                    layoutProvider={this._layoutProvider}
-                    dataProvider={this.dataProvider.cloneWithRows(this.state.moreInfoList)}
-                    rowRenderer={this.renderSecItem}
-                    extendedState={this.state}
-                    onEndReached={this._onSecondTabLoadMore}
-                    renderFooter={this._onSecondTabRenderFooter}
-                    onEndReachedThreshold={50}
-                    scrollViewProps={{
-                        refreshControl: (
-                            <RefreshControl
-                                refreshing={this.state.moreLoading}
-                                onRefresh={async () => {
-                                    this.setState({moreLoading: true});
-                                    await this.getMyPublishPartyList();
-                                }}
-                            />
-                        ),
-                    }}
-                />
-        );
-    };
+    nextPage() {
+        if (this.state.page !== this.state.totalPage) {
+            let currentPage = this.state.page;
+            this.pagination.scrollTo({x: width * currentPage, y: 0, animated: true});
+            this.setState({
+                page: ++currentPage,
+                firstBtnImg:require('../images/party_outline.png'),
+                secondBtnImg:require('../images/publish_party.png'),
+                visible:true
+            });
+            this.getMyPublishPartyList();
+        }
+    }
 
     render() {
         return (
             <SafeAreaView style={{flex: 1, backgroundColor: '#ffffff'}}>
                 <Provider>
-                    <View style={{flex: 1, backgroundColor: Global.pageBackgroundColor}}>
+                    <View style={{flex: 1}}>
                         <CommonTitleBar title={'我的活动'} nav={this.props.navigation}/>
-                        <NavigationContainer>
-                            <Tab.Navigator
-                                screenOptions={({route}) => ({
-                                    tabBarIcon: ({focused, color, size}) => {
-                                        let iconName;
-
-                                        if (route.name === '我参与的') {
-                                            iconName = focused ? require('../images/party.png') : require('../images/party_outline.png');
-                                        } else if (route.name === '我发布的') {
-                                            iconName = focused ? require('../images/publish_party.png') : require('../images/publish_party_outline.png');
-                                        }
-
-                                        // You can return any component that you like here!
-                                        // return <Ionicons name={iconName} size={size} color={color} />;
-                                        return <Image style={{width: 25, height: 25}} source={iconName}/>;
-                                    },
-                                })}
-                                tabBarOptions={{
-                                    activeTintColor: 'tomato',
-                                    inactiveTintColor: 'gray',
+                        <ScrollView ref={(pagination) => this.pagination = pagination} pagingEnabled={true}
+                                    horizontal={true} scrollEnabled={false}>
+                            <FlatList
+                                style={{flex: 1, width: width}}
+                                data={this.state.infoList}
+                                renderItem={this.renderItem}
+                                keyExtractor={this._keyExtractor}
+                                extraData={this.state}
+                                onEndReached={this._onLoadMore}
+                                onEndReachedThreshold={50}
+                                ListFooterComponent={this._renderFooter}
+                                refreshing={this.state.loading}
+                                onRefresh={() => {
+                                    this.getMySignUpPartyList();
                                 }}
-                            >
-                                <Tab.Screen name="我参与的" component={this.HomeScreen}/>
-                                <Tab.Screen name="我发布的" component={this.SettingsScreen}/>
-                            </Tab.Navigator>
-                        </NavigationContainer>
-                        {/*<TabBar*/}
-                        {/*    unselectedTintColor="#949494"*/}
-                        {/*    tintColor='black'*/}
-                        {/*    // tintColor="#33A3F4"*/}
-                        {/*    // barTintColor="#f5f5f5"*/}
-                        {/*>*/}
-                        {/*    <TabBar.Item*/}
-                        {/*        title="我参与的"*/}
-                        {/*        icon={this.state.selectedTab === 0 ? <Image style={{width: 25, height: 25}}*/}
-                        {/*                                                    source={require("../images/party.png")}/> :*/}
-                        {/*            <Image style={{width: 25, height: 25}}*/}
-                        {/*                   source={require("../images/party_outline.png")}/>}*/}
-                        {/*        selected={this.state.selectedTab === 0}*/}
-                        {/*        onPress={() => this._changeTab(0)}*/}
-                        {/*    >*/}
-                        {/*        <RecyclerListView*/}
-                        {/*            style={{backgroundColor: Global.pageBackgroundColor}}*/}
-                        {/*            forceNonDeterministicRendering*/}
-                        {/*            layoutProvider={this._layoutProvider}*/}
-                        {/*            dataProvider={this.dataProvider.cloneWithRows(this.state.infoList)}*/}
-                        {/*            rowRenderer={this.renderItem}*/}
-                        {/*            extendedState={this.state}*/}
-                        {/*            onEndReached={this._onLoadMore}*/}
-                        {/*            renderFooter={this._renderFooter}*/}
-                        {/*            onEndReachedThreshold={50}*/}
-                        {/*            scrollViewProps={{*/}
-                        {/*                refreshControl: (*/}
-                        {/*                    <RefreshControl*/}
-                        {/*                        refreshing={this.state.loading}*/}
-                        {/*                        onRefresh={async () => {*/}
-                        {/*                            this.setState({loading: true});*/}
-                        {/*                            await this.getMySignUpPartyList();*/}
-                        {/*                        }}*/}
-                        {/*                    />*/}
-                        {/*                )*/}
-                        {/*            }}*/}
-                        {/*        />*/}
-                        {/*    </TabBar.Item>*/}
-                        {/*    <TabBar.Item*/}
-                        {/*        icon={*/}
-                        {/*            this.state.selectedTab === 1 ? <Image style={{width: 25, height: 25}}*/}
-                        {/*                                                  source={require("../images/publish_party.png")}/> :*/}
-                        {/*                <Image style={{width: 25, height: 25}}*/}
-                        {/*                       source={require("../images/publish_party_outline.png")}/>*/}
-                        {/*        }*/}
-                        {/*        title="我发布的"*/}
-                        {/*        selected={this.state.selectedTab === 1}*/}
-                        {/*        onPress={() => this._changeTab(1)}*/}
-                        {/*    >*/}
-                        {/*        <RecyclerListView*/}
-                        {/*            style={{backgroundColor: Global.pageBackgroundColor}}*/}
-                        {/*            forceNonDeterministicRendering*/}
-                        {/*            layoutProvider={this._layoutProvider}*/}
-                        {/*            dataProvider={this.dataProvider.cloneWithRows(this.state.moreInfoList)}*/}
-                        {/*            rowRenderer={this.renderSecItem}*/}
-                        {/*            extendedState={this.state}*/}
-                        {/*            onEndReached={this._onSecondTabLoadMore}*/}
-                        {/*            renderFooter={this._onSecondTabRenderFooter}*/}
-                        {/*            onEndReachedThreshold={50}*/}
-                        {/*            scrollViewProps={{*/}
-                        {/*                refreshControl: (*/}
-                        {/*                    <RefreshControl*/}
-                        {/*                        refreshing={this.state.moreLoading}*/}
-                        {/*                        onRefresh={async () => {*/}
-                        {/*                            this.setState({moreLoading: true});*/}
-                        {/*                            await this.getMyPublishPartyList();*/}
-                        {/*                        }}*/}
-                        {/*                    />*/}
-                        {/*                )*/}
-                        {/*            }}*/}
-                        {/*        />*/}
-                        {/*    </TabBar.Item>*/}
-                        {/*</TabBar>*/}
-                        <Modal
-                            transparent
-                            maskClosable={false}
-                            visible={this.state.visible}
-                        >
-                            <ActivityIndicator size="large" color="#63B8FF"/>
-                        </Modal>
+                            />
+                            <RecyclerListView
+                                style={{flex: 1, width: width}}
+                                forceNonDeterministicRendering
+                                layoutProvider={this._layoutProvider}
+                                dataProvider={this.dataProvider.cloneWithRows(this.state.moreInfoList)}
+                                rowRenderer={this.renderSecItem}
+                                extendedState={this.state}
+                                onEndReached={this._onSecondTabLoadMore}
+                                renderFooter={this._onSecondTabRenderFooter}
+                                onEndReachedThreshold={50}
+                                scrollViewProps={{
+                                    refreshControl: (
+                                        <RefreshControl
+                                            refreshing={this.state.moreLoading}
+                                            onRefresh={async () => {
+                                                this.setState({moreLoading: true});
+                                                await this.getMyPublishPartyList();
+                                            }}
+                                        />
+                                    ),
+                                }}
+                            />
+                        </ScrollView>
+                        <View style={{
+                            height: 1,
+                            backgroundColor: Global.pageBackgroundColor,
+                            width: width,
+                        }}/>
+                        <View
+                            style={{
+                                flexDirection: 'row',
+                                justifyContent: 'space-between',
+                                alignItems: 'center',
+                                padding: 10,
+                                width: width,
+                            }}>
+                            <TouchableOpacity activeOpacity={0.6} onPress={() => this.lastPage()}>
+                                <View style={[styles.pageBtn, {backgroundColor: 'white'}]}>
+                                    <Image style={{width: 30, height: 30, marginTop: 5, marginBottom: 5}}
+                                           source={this.state.firstBtnImg}/>
+                                    <Text style={{
+                                        color: "black",
+                                        fontSize: 16,
+                                        marginBottom: 5
+                                    }}>我参与的</Text>
+                                </View>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity activeOpacity={0.6} onPress={() => this.nextPage()}>
+                                <View style={[styles.pageBtn, {backgroundColor: 'white'}]}>
+                                    <Image style={{width: 30, height: 30, marginTop: 5, marginBottom: 5}}
+                                           source={this.state.secondBtnImg}/>
+                                    <Text style={{
+                                        color: "black",
+                                        fontSize: 16,
+                                        marginBottom: 5
+                                    }}>我发布的</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </View>
                     </View>
+                    <Modal
+                        transparent
+                        maskClosable={false}
+                        visible={this.state.visible}
+                    >
+                        <ActivityIndicator size="large" color="#63B8FF"/>
+                    </Modal>
                 </Provider>
             </SafeAreaView>
         );
@@ -641,6 +579,15 @@ const listItemStyle = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
+    pageBtn: {
+        width: width / 3,
+        borderRadius: 3,
+        borderWidth: 1,
+        borderColor: Global.pageBackgroundColor,
+        backgroundColor: "#63B8FF",
+        justifyContent: "center",
+        alignItems: "center",
+    },
     contentFindView: {
         height: 50,
         // flex: 1,

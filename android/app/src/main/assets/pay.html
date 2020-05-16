@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- import CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-chalk/index.css">
+  <script
+    src="https://www.paypal.com/sdk/js?client-id=AeKQ3GNrIEjXCJG1XPHN_UNAxOjTTJSEse4MHoBNP7CachSTTxRUZrx9ElXCkYrKWk61c2vrWxm56Sqy&currency=EUR"> // Required. Replace SB_CLIENT_ID with your sandbox client ID.
+    </script>
+</head>
+
+<body>
+
+  <div id="app">
+    <el-row :gutter="12">
+      <el-col :span="12">
+        <el-card shadow="always">
+          <div id='product'></div>
+        </el-card>
+      </el-col>
+      <el-col :span="12">
+        <el-card shadow="always">
+          <div id='price'></div>
+        </el-card>
+      </el-col>
+    </el-row>
+    <el-divider></el-divider>
+  </div>
+  <div id="paypal-button-container"></div>
+
+  <script>
+    paypal.Buttons({
+      createOrder: function (data, actions) {
+        // This function sets up the details of the transaction, including the amount and line item details.
+        return actions.order.create({
+          purchase_units: [{
+            amount: {
+              value: price
+            }
+          }]
+        });
+      },
+      onApprove: function (data, actions) {
+        return actions.order.capture().then(function (details) {
+          window.postMessage(data.orderID.toString());
+          // window.ReactNativeWebView.postMessage(data.orderID.toString());
+        });
+      }
+    }).render('#paypal-button-container');
+  </script>
+</body>
+<script src="https://unpkg.com/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/element-ui/lib/index.js"></script>
+<script>
+  new Vue({
+    el: '#app',
+    data: function () {
+      return { visible: false }
+    }
+  })
+</script>
+<script>
+  var price = '0';
+  window.onload = function () {
+    //android 为 document.addEventListener;ios 中为 window.addEventListener
+    document.addEventListener('message', function (msg) {
+      var datas = msg.data.split(',');
+
+      document.getElementById('product').innerHTML = datas[0];
+      document.getElementById('price').innerHTML = '€' + datas[1];
+      price = datas[1];
+    });
+  }
+</script>
+
+</html>

@@ -129,11 +129,18 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.ume0622"
+        applicationId "orz.qianyuan"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode 54
+        versionName "3.0.1"
+        multiDexEnabled true
+        manifestPlaceholders = [
+                JPUSH_PKGNAME: applicationId,
+                JPUSH_APPKEY : "27837b1c1fed6927c288e3df",  //在此替换你的APPKey
+                APP_CHANNEL  : "developer-default",   //应用渠道号
+                JPUSH_CHANNEL: "developer-default"
+        ]
     }
     splits {
         abi {
@@ -149,6 +156,14 @@ android {
             storePassword 'android'
             keyAlias 'androiddebugkey'
             keyPassword 'android'
+        }
+        release {
+            if (project.hasProperty('MYAPP_RELEASE_STORE_FILE')) {
+                storeFile file(MYAPP_RELEASE_STORE_FILE)
+                storePassword MYAPP_RELEASE_STORE_PASSWORD
+                keyAlias MYAPP_RELEASE_KEY_ALIAS
+                keyPassword MYAPP_RELEASE_KEY_PASSWORD
+            }
         }
     }
     buildTypes {
@@ -188,6 +203,8 @@ android {
 }
 
 dependencies {
+    implementation project(':jpush-react-native')  // 添加 jpush 依赖
+    implementation project(':jcore-react-native')  // 添加 jcore 依赖
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules

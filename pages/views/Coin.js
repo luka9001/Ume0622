@@ -7,7 +7,8 @@ import {
     Image,
     Clipboard,
     Linking,
-    Alert
+    Alert,
+    SafeAreaView
 } from "react-native";
 import {Icon, ListItem, Button, PricingCard} from 'react-native-elements';
 import {Modal, Toast, Provider} from '@ant-design/react-native';
@@ -30,7 +31,6 @@ import RNIap, {
     purchaseUpdatedListener,
 } from 'react-native-iap';
 import LoadingView from "./LoadingView";
-import SafeAreaView from "react-native-safe-area-view";
 
 const url = serverConfig.host;
 
@@ -232,7 +232,7 @@ class Index extends Component {
             console.warn(err); // standardized err.code and err.message available
         }
 
-        purchaseUpdateSubscription = purchaseUpdatedListener(
+        purchaseUpdateSubscription = Global.IsHuawei ? null : purchaseUpdatedListener(
             async (purchase: InAppPurchase | SubscriptionPurchase) => {
                 const receipt = purchase.transactionReceipt;
                 console.log(receipt);
@@ -302,7 +302,7 @@ class Index extends Component {
             },
         );
 
-        purchaseErrorSubscription = purchaseErrorListener(
+        purchaseErrorSubscription = Global.IsHuawei ? null : purchaseErrorListener(
             (error: PurchaseError) => {
                 console.log('purchaseErrorListener', error);
                 // Alert.alert('purchase error', JSON.stringify(error));
