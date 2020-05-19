@@ -53,12 +53,12 @@ let JMessageListener = (event) => {
     userInfo.logout();
     AntmModal.alert('提醒', '当前未登录,您是否已在其他设备登录过?', [
       {
-        text: '取消',
+        text: '确定',
       },
-      {
-        text: '去登陆',
-        onPress: () => this.props.navigation.navigate('LoginIndex'),
-      },
+      // {
+      //   text: '去登陆',
+      //   onPress: () => this.props.navigation.navigate('LoginIndex'),
+      // },
     ]);
   }
 };
@@ -67,15 +67,15 @@ export default class App extends PureComponent {
   constructor(props, context) {
     super(props, context);
 
-    if (!__DEV__) {
-      global.console = {
-        info: () => {},
-        log: () => {},
-        warn: () => {},
-        debug: () => {},
-        error: () => {},
-      };
-    }
+    // if (!__DEV__) {
+    //   global.console = {
+    //     info: () => {},
+    //     log: () => {},
+    //     warn: () => {},
+    //     debug: () => {},
+    //     error: () => {},
+    //   };
+    // }
 
     this.isAutoLogin = false;
     this.state = {
@@ -88,6 +88,7 @@ export default class App extends PureComponent {
   initJIM() {
     JMessage.init({
       appkey: Global.JIMAppKey,
+      channel:"",
       isOpenMessageRoaming: false,
       isProduction: true,
     });
@@ -95,6 +96,10 @@ export default class App extends PureComponent {
     // JMessage.addSyncOfflineMessageListener(this.offlineMessageListenser);
     JMessage.setDebugMode({
       enable: false,
+    });
+    //离线消息监听
+    JMessage.addSyncOfflineMessageListener((message) => {
+      console.log("| JIGUANG |===addSyncOfflineMessageListener====" + JSON.stringify(message))
     });
   }
 
@@ -294,7 +299,7 @@ export default class App extends PureComponent {
   }
 
   componentWillUnmount() {
-    // JMessage.removeMessageRetractListener(JMessageListener);
+    JMessage.removeMessageRetractListener(JMessageListener);
     // AppState.removeEventListener('change', this._handleAppStateChange);
     this._isMount = false;
     this.componentDidHide && this.componentDidHide();

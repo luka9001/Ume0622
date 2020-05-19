@@ -20,7 +20,8 @@
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		2D02E4BF1E0B4AB3006451C7 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
 		2DCD954D1E0B4F2C00145EB5 /* Ume0622Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* Ume0622Tests.m */; };
-		5F2BB03024703B51009DE9B2 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2BB02F24703B51009DE9B2 /* StoreKit.framework */; };
+		5F7B09F02473818300926596 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F7B09EF2473818300926596 /* UIKit.framework */; };
+		5F7B0A812473BD9A00926596 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F2BB02F24703B51009DE9B2 /* StoreKit.framework */; };
 		5F7B2AC8246E5D23006195F5 /* ProximaNova-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E9A7A079841A4FC48EEA3515 /* ProximaNova-Light.ttf */; };
 		654C0465DB91817FA8F4445A /* libPods-Ume0622.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2CAFF69B3034ADD2379989BD /* libPods-Ume0622.a */; };
 		AFCD58485AA441D59FDCC6D8 /* libPods-Ume0622-Ume0622Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 36B42E62B82D835AEA0E7410 /* libPods-Ume0622-Ume0622Tests.a */; };
@@ -71,6 +72,27 @@
 		5784A2AB6AA9E6F66ECC9968 /* Pods-Ume0622-Ume0622Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Ume0622-Ume0622Tests.release.xcconfig"; path = "Target Support Files/Pods-Ume0622-Ume0622Tests/Pods-Ume0622-Ume0622Tests.release.xcconfig"; sourceTree = "<group>"; };
 		5F2BB02E24703B47009DE9B2 /* Ume0622.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = Ume0622.entitlements; path = Ume0622/Ume0622.entitlements; sourceTree = "<group>"; };
 		5F2BB02F24703B51009DE9B2 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		5F7B09DA247380F000926596 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		5F7B09DC247380F900926596 /* CFNetwork.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CFNetwork.framework; path = System/Library/Frameworks/CFNetwork.framework; sourceTree = SDKROOT; };
+		5F7B09DE2473810400926596 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		5F7B09E02473810E00926596 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = System/Library/Frameworks/CoreFoundation.framework; sourceTree = SDKROOT; };
+		5F7B09E22473812000926596 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
+		5F7B09E42473812900926596 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		5F7B09E62473813100926596 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		5F7B09E92473816500926596 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		5F7B09EB2473816F00926596 /* Security.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Security.framework; path = System/Library/Frameworks/Security.framework; sourceTree = SDKROOT; };
+		5F7B09ED2473817800926596 /* SystemConfiguration.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SystemConfiguration.framework; path = System/Library/Frameworks/SystemConfiguration.framework; sourceTree = SDKROOT; };
+		5F7B09EF2473818300926596 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
+		5F7B09F12473819100926596 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		5F7B09F3247388E600926596 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = ../../../../../../usr/lib/libsqlite3.dylib; sourceTree = "<group>"; };
+		5F7B09F72473891700926596 /* libresolv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libresolv.tbd; path = usr/lib/libresolv.tbd; sourceTree = SDKROOT; };
+		5F7B09F92473895600926596 /* libz.1.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.1.dylib; path = ../../../../../../usr/lib/libz.1.dylib; sourceTree = "<group>"; };
+		5F7B09FF2473AF1300926596 /* libJCore.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libJCore.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F7B0A012473AF1300926596 /* libJMessageRN.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libJMessageRN.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F7B0A032473AF1300926596 /* libJPush.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libJPush.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F7B0A5B2473B1BC00926596 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
+		5F7B0A5E2473B1F200926596 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
+		5F7B0A602473B24100926596 /* libsqlite3.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.0.tbd; path = usr/lib/libsqlite3.0.tbd; sourceTree = SDKROOT; };
 		5FC7BAA2246C26E0005317F7 /* material design icons.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "material design icons.ttf"; path = "../assets/fonts/material design icons.ttf"; sourceTree = "<group>"; };
 		6779329F18BD485AB66948CB /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = ../assets/fonts/EvilIcons.ttf; sourceTree = "<group>"; };
 		694D8C7206674635BBE8E6AA /* FontAwesome.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome.ttf; path = ../assets/fonts/FontAwesome.ttf; sourceTree = "<group>"; };
@@ -110,8 +132,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F7B0A812473BD9A00926596 /* StoreKit.framework in Frameworks */,
 				654C0465DB91817FA8F4445A /* libPods-Ume0622.a in Frameworks */,
-				5F2BB03024703B51009DE9B2 /* StoreKit.framework in Frameworks */,
+				5F7B09F02473818300926596 /* UIKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -169,6 +192,27 @@
 		2D16E6871FA4F8E400B85C8A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				5F7B0A602473B24100926596 /* libsqlite3.0.tbd */,
+				5F7B0A5E2473B1F200926596 /* WebKit.framework */,
+				5F7B0A5B2473B1BC00926596 /* libz.tbd */,
+				5F7B09FF2473AF1300926596 /* libJCore.a */,
+				5F7B0A012473AF1300926596 /* libJMessageRN.a */,
+				5F7B0A032473AF1300926596 /* libJPush.a */,
+				5F7B09F92473895600926596 /* libz.1.dylib */,
+				5F7B09F72473891700926596 /* libresolv.tbd */,
+				5F7B09F3247388E600926596 /* libsqlite3.dylib */,
+				5F7B09F12473819100926596 /* UserNotifications.framework */,
+				5F7B09EF2473818300926596 /* UIKit.framework */,
+				5F7B09ED2473817800926596 /* SystemConfiguration.framework */,
+				5F7B09EB2473816F00926596 /* Security.framework */,
+				5F7B09E92473816500926596 /* MobileCoreServices.framework */,
+				5F7B09E62473813100926596 /* Foundation.framework */,
+				5F7B09E42473812900926596 /* CoreTelephony.framework */,
+				5F7B09E22473812000926596 /* CoreGraphics.framework */,
+				5F7B09E02473810E00926596 /* CoreFoundation.framework */,
+				5F7B09DE2473810400926596 /* CoreAudio.framework */,
+				5F7B09DC247380F900926596 /* CFNetwork.framework */,
+				5F7B09DA247380F000926596 /* AudioToolbox.framework */,
 				5F2BB02F24703B51009DE9B2 /* StoreKit.framework */,
 				5FC7BAA2246C26E0005317F7 /* material design icons.ttf */,
 				ED297162215061F000B7C4FE /* JavaScriptCore.framework */,
@@ -800,7 +844,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Kai Lu (X289BAPX8W)";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Kai Lu (X289BAPX8W)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = X289BAPX8W;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -817,7 +861,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = orz.qianyuan.ume;
 				PRODUCT_NAME = "UME交友";
-				PROVISIONING_PROFILE_SPECIFIER = AdHoc;
+				PROVISIONING_PROFILE_SPECIFIER = AppStore;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
@@ -834,11 +878,12 @@
 				CODE_SIGN_ENTITLEMENTS = Ume0622/Ume0622.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution: Kai Lu (X289BAPX8W)";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 54;
+				CURRENT_PROJECT_VERSION = 56;
 				DEVELOPMENT_TEAM = X289BAPX8W;
 				INFOPLIST_FILE = Ume0622/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				MARKETING_VERSION = 3.0.1;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -846,7 +891,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = orz.qianyuan.ume;
 				PRODUCT_NAME = "UME交友";
-				PROVISIONING_PROFILE_SPECIFIER = AdHoc;
+				PROVISIONING_PROFILE_SPECIFIER = AppStore;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
 				VERSIONING_SYSTEM = "apple-generic";

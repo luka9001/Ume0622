@@ -35,7 +35,7 @@ export default class MenuModal extends React.Component {
     dataArray = this.props.dataArray;
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     this.setState({ isVisible: nextProps.show });
   }
 

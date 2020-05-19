@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import TitleBar from '../views/TitleBar';
 
 import {
-    Image, StyleSheet, Text, View, Dimensions, PixelRatio, FlatList, TouchableHighlight, SafeAreaView
+    Image, StyleSheet, Text, View, Dimensions, PixelRatio, FlatList, TouchableHighlight, SafeAreaView,
 } from 'react-native';
 import api from '../service/socialApi';
 import config from '../service/config';
@@ -57,7 +57,7 @@ class Index extends Component {
     loadConversations() {
         this.setState({visible: true});
         JMessage.getConversations(
-            conArr => {
+            (conArr) => {
                 // conArr: 会话数组。
                 // 刷新会话列表
                 if (conArr != null && conArr.length > 0) {
@@ -78,6 +78,7 @@ class Index extends Component {
                                     type: Global.currentChattingType,
                                     username: Global.currentChattingUsername,
                                     appKey: Global.JIMAppKey,
+                                    isNoDisturb:false
                                 },
                                 () => {
                                 },
@@ -91,6 +92,7 @@ class Index extends Component {
                                     type: Global.currentChattingType,
                                     username: Global.currentChattingUsername,
                                     appKey: Global.JIMAppKey,
+                                    isNoDisturb:false
                                 },
                                 () => {
                                 },
@@ -111,7 +113,7 @@ class Index extends Component {
                 }
                 this.setState({visible: false});
             },
-            error => {
+            (error) => {
                 this.setState({visible: false});
                 let code = error.code;
                 let desc = error.description;
@@ -156,6 +158,7 @@ class Index extends Component {
             CountEmitter.emit('refreshRedDot');
             LogUtil.d('receive add friend msg: ' + JSON.stringify(event));
         };
+
         JMessage.addContactNotifyListener(this.addFriendListener);
     }
 
@@ -178,7 +181,7 @@ class Index extends Component {
 
     notifyLogin = () => {
         console.log('登录信号');
-        this.load();
+        // this.load();
     };
 
     render() {
@@ -234,7 +237,7 @@ class Index extends Component {
 
     _keyExtractor = (item, index) => 'conversation-' + index;
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps){
         if (newProps.isFocused) {
             this.load();
             return true;
@@ -257,7 +260,6 @@ class Index extends Component {
             }
         });
         StorageUtil.get('hasLogin', (error, object) => {
-            // alert(object.hasLogin);
             if (object === null) {
                 this.setState({
                     recentConversation: [],

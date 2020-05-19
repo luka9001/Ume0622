@@ -37,7 +37,7 @@ class Index extends Component {
     }
 
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         if (newProps.isFocused) {
             UserInfoApi.getUserInfo();
             this.componentDidMount();

@@ -26,7 +26,7 @@ const X_WIDTH = 375;
 const X_HEIGHT = 812;
 
 class TitleBar extends Component {
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         if (newProps.isFocused) {
             const that = this;
             StorageUtil.get('check_status', function (error, object) {

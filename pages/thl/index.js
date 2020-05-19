@@ -498,7 +498,7 @@ class Index extends Component {
             ).done();
     };
 
-    componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
+    UNSAFE_componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
         UserInfoApi.getUserInfo();
         return true;
     }
@@ -906,7 +906,8 @@ class Index extends Component {
                                             }}
                                         >
                                             {/*<Image style={{width: width - 150, height: 30, marginTop: 5}}*/}
-                                            {/*       source={require("../images/star.png")}/>*/}
+                                            {/*       source={requ
+                                            ire("../images/star.png")}/>*/}
                                             <Text style={{
                                                 textAlign: 'center',
                                                 textAlignVertical: 'center',

@@ -57,7 +57,7 @@ class Index extends Component {
         // this._getMemberData(this.props.navigation.state.params.id);
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         if (newProps.isFocused) {
             this.setState({
                 favorateLoading: true

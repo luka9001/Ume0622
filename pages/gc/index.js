@@ -48,7 +48,7 @@ const text = {
 };
 
 class Index extends Component {
-    componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
+    UNSAFE_componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
         UserInfoApi.getUserInfo();
         return true;
     }

@@ -23,7 +23,7 @@ class Index extends Component {
         }
     }
 
-    componentWillReceiveProps(newProps) {
+    UNSAFE_componentWillReceiveProps(newProps) {
         if (newProps.isFocused) {
             this.setState({visible: true});
             this._componentDidMount();
