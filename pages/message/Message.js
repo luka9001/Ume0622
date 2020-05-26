@@ -2,7 +2,16 @@ import React, {Component} from 'react';
 import TitleBar from '../views/TitleBar';
 
 import {
-    Image, StyleSheet, Text, View, Dimensions, PixelRatio, FlatList, TouchableHighlight, SafeAreaView,
+    Image,
+    StyleSheet,
+    Text,
+    View,
+    Dimensions,
+    PixelRatio,
+    FlatList,
+    TouchableHighlight,
+    SafeAreaView,
+    DeviceEventEmitter,
 } from 'react-native';
 import api from '../service/socialApi';
 import config from '../service/config';
@@ -35,7 +44,7 @@ class Index extends Component {
             checkedUpgrade: true, // 标记是否检查了更新，这里置为true则不会检查更新，设置为false则每次启动时检查更新，该功能默认不开启
             recentConversation: [],
         };
-        this.registerJIMListener();
+        // this.registerJIMListener();
 
         this.downloadTag = [];
 
@@ -56,80 +65,99 @@ class Index extends Component {
     // 加载当前用户的会话
     loadConversations() {
         this.setState({visible: true});
-        JMessage.getConversations(
-            (conArr) => {
-                // conArr: 会话数组。
-                // 刷新会话列表
-                if (conArr != null && conArr.length > 0) {
-                    // LogUtil.d("conversation list: " + JSON.stringify(conArr));
-                    let showList = false;
-                    let unreadTag = false;
-                    for (let i = 0; i < conArr.length; i++) {
-                        // LogUtil.w(JSON.stringify(conArr[i]));
-                        // 这里可以取到会话，但是删除好友后，会话里没有latestMessage，如果所有的会话都没有latestMessage，则不显示会话列表
-                        if (conArr[i].latestMessage) {
-                            showList = true;
-                        }
-                        // 如果当前正在跟这个人聊天，则重置该人的未读消息数
-                        if (Global.currentChattingUsername === conArr[i].target.username) {
-                            conArr[i].unreadCount = 0;
-                            JMessage.resetUnreadMessageCount(
-                                {
-                                    type: Global.currentChattingType,
-                                    username: Global.currentChattingUsername,
-                                    appKey: Global.JIMAppKey,
-                                    isNoDisturb:false
-                                },
-                                () => {
-                                },
-                                error => {
-                                },
-                            );
-                        } else if (Global.currentChattingUsername === conArr[i].target.id) {
-                            conArr[i].unreadCount = 0;
-                            JMessage.resetUnreadMessageCount(
-                                {
-                                    type: Global.currentChattingType,
-                                    username: Global.currentChattingUsername,
-                                    appKey: Global.JIMAppKey,
-                                    isNoDisturb:false
-                                },
-                                () => {
-                                },
-                                error => {
-                                },
-                            );
-                        }
-                        if (conArr[i].unreadCount > 0) {
-                            unreadTag = true;
-                        }
-
-                        console.log('接受到新消息');
-                    }
-                    if (showList) {
-                        this.setState({recentConversation: conArr});
-                    }
-                    Global.JMessageCount = unreadTag;
+        try {
+            JMessage.getMyInfo((UserInf) => {
+                if (UserInf.username === undefined) {
+                    // 未登录
+                    console.log('qianyuan', 'nonononononononoononno');
+                } else {
+                    // 已登录
+                    console.log('qianyuan', 'yesyesyesyesyesyesyesyes');
                 }
-                this.setState({visible: false});
-            },
-            (error) => {
-                this.setState({visible: false});
-                let code = error.code;
-                let desc = error.description;
-                console.log('qianyuan', code + '=' + desc);
-                if (error.code === 863004) {
-                    userInfo.logout();
-                    Modal.alert('提醒', '当前未登录,您是否已在其他设备登录过?', [
-                        {text: '我知道了'},
-                    ]);
-                }
-
-                // Modal.alert('提醒', '聊天数据加载失败，请再次尝试', [
-                //     {text: '我知道了'},
-                // ]);
-            },
-        );
+            });
+            // console.log("qianyuan","message111111111111111111111111111111111111" + JMessage);
+            JMessage.getConversations(
+                (conArr) => {
+                    // conArr: 会话数组。
+                    // 刷新会话列表
+                    if (conArr != null && conArr.length > 0) {
+                        console.log('qianyuan', 'message22222222222222222222222222222222');
+                        // LogUtil.d("conversation list: " + JSON.stringify(conArr));
+                        let showList = false;
+                        let unreadTag = false;
+                        for (let i = 0; i < conArr.length; i++) {
+                            // LogUtil.w(JSON.stringify(conArr[i]));
+                            // 这里可以取到会话，但是删除好友后，会话里没有latestMessage，如果所有的会话都没有latestMessage，则不显示会话列表
+                            if (conArr[i].latestMessage) {
+                                showList = true;
+                            }
+                            // 如果当前正在跟这个人聊天，则重置该人的未读消息数
+                            if (Global.currentChattingUsername === conArr[i].target.username) {
+                                conArr[i].unreadCount = 0;
+                                JMessage.resetUnreadMessageCount(
+                                    {
+                                        type: Global.currentChattingType,
+                                        username: Global.currentChattingUsername,
+                                        appKey: Global.JIMAppKey,
+                                        isNoDisturb: false,
+                                    },
+                                    () => {
+                                    },
+                                    error => {
+                                    },
+                                );
+                            } else if (Global.currentChattingUsername === conArr[i].target.id) {
+                                conArr[i].unreadCount = 0;
+                                JMessage.resetUnreadMessageCount(
+                                    {
+                                        type: Global.currentChattingType,
+                                        username: Global.currentChattingUsername,
+                                        appKey: Global.JIMAppKey,
+                                        isNoDisturb: false,
+                                    },
+                                    () => {
+                                    },
+                                    error => {
+                                    },
+                                );
+                            }
+                            if (conArr[i].unreadCount > 0) {
+                                unreadTag = true;
+                            }
+                            console.log('接受到新消息');
+                        }
+                        if (showList) {
+                            this.setState({recentConversation: conArr});
+                        }
+                        Global.JMessageCount = unreadTag;
+                    }
+                    this.setState({visible: false});
+                },
+                (error) => {
+                    this.setState({visible: false});
+                    let code = error.code;
+                    let desc = error.description;
+                    console.log('qianyuan', code + '=' + desc);
+                    if (error.code === 863004) {
+                        userInfo.logout();
+                        // Modal.alert('提醒', '当前未登录,您是否已在其他设备登录过?', [
+                        //     {text: '我知道了'},
+                        // ]);
+                        this.setState({
+                            recentConversation: [],
+                        });
+                    }
+                    this.setState({
+                        recentConversation: [],
+                    });
+                    // Modal.alert('提醒', '聊天数据加载失败，请再次尝试', [
+                    //     {text: '我知道了'},
+                    // ]);
+                },
+            );
+        } catch (e) {
+            console.log('qianyuan', '==========' + e);
+        }
     }
 
     // 注册极光IM的监听器
@@ -162,21 +190,22 @@ class Index extends Component {
         JMessage.addContactNotifyListener(this.addFriendListener);
     }
 
-    componentWillMount() {
-        CountEmitter.addListener(
-            'notifyConversationListRefresh',
-            this.notifyConversationListRefreshListener,
-        );
+    UNSAFE_componentWillMount() {
+        this.onmessage = DeviceEventEmitter.addListener('onmessage', (data) => {
+            console.log('聊天界面');
+            console.log(data['from_client_name']);
 
-        CountEmitter.addListener(
-            'notifyLogin',
-            this.notifyLogin,
-        );
+            let list = this.state.recentConversation;
+            list.push(data);
+            this.setState({
+                recentConversation: list,
+            });
+        });
     }
 
     notifyConversationListRefreshListener = () => {
         // 重新加载会话
-        this.loadConversations();
+        // this.loadConversations();
     };
 
     notifyLogin = () => {
@@ -210,7 +239,7 @@ class Index extends Component {
                         <FlatList
                             extraData={this.state}
                             data={this.state.recentConversation}
-                            renderItem={this.renderItem}
+                            renderItem={this._renderItem}
                             keyExtractor={this._keyExtractor}
                         />
                         {/*)}*/}
@@ -237,105 +266,57 @@ class Index extends Component {
 
     _keyExtractor = (item, index) => 'conversation-' + index;
 
-    UNSAFE_componentWillReceiveProps(newProps){
-        if (newProps.isFocused) {
-            this.load();
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    load() {
-        // if (newProps.isFocused) {
-        UserInfoApi.getUserInfo();
-        StorageUtil.get('username', (error, object) => {
-            // if (!error && object && object.username) {
-            //     this.setState({username: object.username});
-            // }
-            if (object !== null) {
-                if (object.name !== null) {
-                    this.setState({username: object.username});
-                }
-            }
-        });
-        StorageUtil.get('hasLogin', (error, object) => {
-            if (object === null) {
-                this.setState({
-                    recentConversation: [],
-                });
-            } else {
-                if (!object.hasLogin) {
-                    this.setState({
-                        recentConversation: [],
-                    });
-                } else if (object.hasLogin) {
-                    this.setState({
-                        recentConversation: [],
-                    });
-                    this.loadConversations();
-                }
-            }
-        });
-    }
-
-    componentDidMount() {
-        // this.load();
-
-        // this.loadConversations();
-
-        // StorageUtil.get("username", (error, object) => {
-        //   if (!error && object && object.username) {
-        //     this.setState({ username: object.username });
-        //     // this.loadConversations(object.username);
-        //   }
-        // });
-
-
-        // 组件挂载完成后检查是否有更新，只针对Android平台检查
-        // if (!this.state.checkedUpgrade) {
-        //   if (Platform.OS === "android") {
-        //     UpgradeModule.getVersionCodeName((versionCode, versionName) => {
-        //       if (versionCode > 0 && !Utils.isEmpty(versionName)) {
-        //         // 请求服务器查询更新
-        //         let url =
-        //           Api.ANDROID_UPGRADE_URL +
-        //           "?versionCode=" +
-        //           versionCode +
-        //           "&versionName=" +
-        //           versionName;
-        //         fetch(url)
-        //           .then(res => res.json())
-        //           .then(json => {
-        //             if (json != null && json.code == 1) {
-        //               // 有新版本
-        //               let data = json.msg;
-        //               if (data != null) {
-        //                 let newVersionCode = data.versionCode;
-        //                 let newVersionName = data.versionName;
-        //                 let newVersionDesc = data.versionDesc;
-        //                 let downUrl = data.downUrl;
-        //                 let content =
-        //                   "版本号：" +
-        //                   newVersionCode +
-        //                   "\n\n版本名称：" +
-        //                   newVersionName +
-        //                   "\n\n更新说明：" +
-        //                   newVersionDesc;
-        //                 this.setState({ upgradeContent: content }, () => {
-        //                   // 显示更新dialog
-        //                   this.refs.upgradeDialog.showModal();
-        //                 });
-        //               }
-        //             }
-        //           })
-        //           .catch(e => { });
-        //       }
-        //     });
-        //   }
-        //   this.setState({ checkedUpgrade: true });
-        // }
-    }
+    _renderItem = ({item}) => {
+        let type;
+        let lastTime;
+        let contactId;
+        let avatar;
+        let nick = '12312';
+        let lastMsgContent = '';
+        return (
+            <View style={{flex: 1}}>
+                <TouchableHighlight
+                    underlayColor={Global.touchableHighlightColor}
+                    onPress={() => {
+                        this.props.navigation.navigate('Chatting', {
+                            contactId: contactId,
+                            name: nick,
+                            avatar: avatar,
+                            type: type,
+                        });
+                    }}
+                >
+                    <View style={styles.listItemContainer}>
+                        {typeof (avatar) != 'string' ? <ImageAdapter path={avatar} width={50} height={50}/> :
+                            <FastImage style={{width: 50, height: 50, borderRadius: 5}}
+                                       source={{uri: avatar, headers: {Authorization: config.access_token}}}/>
+                        }
+                        <View style={styles.listItemTextContainer}>
+                            <View style={styles.listItemSubContainer}>
+                                <Text numberOfLines={1} style={styles.listItemTitle}>
+                                    {nick}
+                                </Text>
+                                <Text numberOfLines={1} style={styles.listItemTime}>
+                                    {TimeUtil.formatWebSocketMessageTime(item['time'])}
+                                </Text>
+                            </View>
+                            <View style={styles.listItemSubContainer}>
+                                <Text numberOfLines={1} style={styles.listItemSubtitle}>
+                                    {lastMsgContent}
+                                </Text>
+                                {item.unreadCount > 0 ? (
+                                    <View style={styles.redDot}>
+                                        <Text style={styles.redDotText}>{item.unreadCount}</Text>
+                                    </View>
+                                ) : null}
+                            </View>
+                        </View>
+                    </View>
+                </TouchableHighlight>
+                <View style={styles.divider}/>
+            </View>
+        );
+    };
 
     renderItem = ({item}) => {
         if (!item.latestMessage) {
@@ -560,6 +541,7 @@ class Index extends Component {
     componentWillUnmount() {
         // Toast.info('未注册', 1, undefined, false);
         this.unregisterListeners();
+        this.onmessage.remove();
     }
 }
 

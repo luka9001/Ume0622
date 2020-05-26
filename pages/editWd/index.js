@@ -697,7 +697,7 @@ class Index extends Component {
                 // isRecordSelected: true,
                 isCrop: true,
                 showCropCircle: false,
-                quality: 20,
+                quality: 10,
                 compress: true,
                 CropW: 400,
                 CropH: 300,

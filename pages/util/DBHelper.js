@@ -34,6 +34,7 @@ export default class DBHelper {
     DB_NAME = `rnwechat-${username}.db`;
     DB_DISPLAY_NAME = `RNWECHAT-${username}-DB`;
     // LogUtil.w(`DB_NAME = ${DB_NAME}, DB_DISPLAY_NAME = ${DB_DISPLAY_NAME}`);
+    // DBHelper.createTableCheck();
     DBHelper.createTable();
     // DBHelper.queryData();
   }
@@ -55,32 +56,32 @@ export default class DBHelper {
   }
 
   // 创建表前检查表是否存在
-  // static createTableCheck() {
-  //   if (!db) {
-  //     DBHelper.open();
-  //   }
-  //   db.transaction(
-  //     tx => {
-  //       tx.executeSql(CEHCK_TABLE_SQL, [], (tx, result) => {
-  //           LogUtil.d('execute sql success: ' + JSON.stringify(result));
-  //           if (result && result.rows) {
-  //             let len = result.rows.length;
-  //             if (len == 0) {
-  //               this.createTable();
-  //             }
-  //           }
-  //       }, (error) => {
-  //           LogUtil.d('execute sql fail: ' + error)
-  //       });
-  //     },
-  //     result => {
-  //       LogUtil.d("transaction success: " + result);
-  //     },
-  //     error => {
-  //       LogUtil.d("transaction fail: " + error);
-  //     }
-  //   );
-  // }
+  static createTableCheck() {
+    if (!db) {
+      DBHelper.open();
+    }
+    db.transaction(
+      tx => {
+        tx.executeSql(CEHCK_TABLE_SQL, [], (tx, result) => {
+            LogUtil.d('execute sql success: ' + JSON.stringify(result));
+            if (result && result.rows) {
+              let len = result.rows.length;
+              if (len === 0) {
+                this.createTable();
+              }
+            }
+        }, (error) => {
+            LogUtil.d('execute sql fail: ' + error)
+        });
+      },
+      result => {
+        LogUtil.d("transaction success: " + result);
+      },
+      error => {
+        LogUtil.d("transaction fail: " + error);
+      }
+    );
+  }
 
   // 创建表
   static createTable() {

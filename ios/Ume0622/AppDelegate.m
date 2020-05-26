@@ -39,10 +39,10 @@ static void InitializeFlipper(UIApplication *application) {
                     channel:@""
            apsForProduction:YES
                    category:nil
-             messageRoaming:false];
-    
+             messageRoaming:true];
+
   [JMessage addDelegate:self withConversation:nil];
-  
+
   // JPush初始化配置
   [JPUSHService setupWithOption:launchOptions appKey:@"27837b1c1fed6927c288e3df"
                         channel:@""
