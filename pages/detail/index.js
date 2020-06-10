@@ -16,7 +16,6 @@ import {Carousel, Toast, Provider} from '@ant-design/react-native';
 import serverConfig from '../service/config';
 import CommonTitleBar from '../views/CommonTitleBar';
 import Global from '../util/Global';
-import JMessage from "jmessage-react-plugin";
 import pfmApi from '../service/price';
 import StorageUtil from "../util/StorageUtil";
 import {withNavigationFocus} from 'react-navigation';
@@ -267,26 +266,7 @@ class Index extends Component {
         } else {
             api.delBlackList(JSON.stringify({id})).then(function (message) {
                 if (message.code === 200) {
-                    JMessage.removeUsersFromBlacklist({
-                            usernameArray: [config.jMessageAccountHeader + id],
-                            appKey: Global.JIMAppKey
-                        },
-                        () => {
-                            // do something.
-                            that.setState({blackListBtn: '黑名单', favorateLoading: false,});
-                        }, (error) => {
-                            let code = error.code;
-                            let desc = error.description;
-                            that.setState({favorateLoading: false});
-                            //表示该用户注册失败
-                            if (code === 818002) {
 
-                            } else {
-                                AntmModal.alert('提醒', '移除黑名单失败，请再次尝试', [
-                                    {text: '我知道了'},
-                                ]);
-                            }
-                        })
                 }
             }, function (error) {
 
@@ -305,26 +285,7 @@ class Index extends Component {
             this.setState({favorateLoading: true});
             api.postBlackList(JSON.stringify({id})).then(function (message) {
                 if (message.code === 200) {
-                    JMessage.addUsersToBlacklist({
-                            usernameArray: [config.jMessageAccountHeader + id],
-                            appKey: Global.JIMAppKey
-                        },
-                        () => {
-                            // do something.
-                            that.setState({favorateLoading: false, blackListBtn: '已拉黑'});
-                        }, (error) => {
-                            let code = error.code;
-                            let desc = error.description;
-                            that.setState({favorateLoading: false});
-                            //表示该用户注册失败
-                            if (code === 818002) {
 
-                            } else {
-                                AntmModal.alert('提醒', '添加黑名单失败，请再次尝试', [
-                                    {text: '我知道了'},
-                                ]);
-                            }
-                        })
                 }
             }, function (error) {
 

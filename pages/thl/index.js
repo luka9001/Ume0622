@@ -15,7 +15,7 @@ import {
     Modal as RNModel,
     Animated,
     FlatList, StatusBar,
-    SafeAreaView
+    SafeAreaView,
 } from 'react-native';
 import {Icon, ListItem} from 'react-native-elements';
 import api from '../service/allMembersApi';
@@ -30,7 +30,6 @@ import {withNavigationFocus} from 'react-navigation';
 import UserInfoApi from '../service/UserInfoApi';
 import Global from '../util/Global';
 import FastImage from 'react-native-fast-image';
-import JMessage from 'jmessage-react-plugin';
 import StorageUtil from '../util/StorageUtil';
 import DBHelper from '../util/DBHelper';
 import MessageUserInfoUtil from '../util/MessageUserInfoUtil';
@@ -39,6 +38,7 @@ import VipLevelView from '../views/VipLevelView';
 import HeaderView from './HeaderView';
 import Utils from '../util/Utils';
 import AntmModal from '@ant-design/react-native/lib/modal/Modal';
+import JPush from 'jpush-react-native';
 
 let {width} = Dimensions.get('window');
 
@@ -176,6 +176,24 @@ const HEADER_MAX_HEIGHT = 300;
 const HEADER_MIN_HEIGHT = Platform.OS === 'ios' ? 60 : 73;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
+class Button extends React.Component {
+    render() {
+        return <TouchableOpacity
+            onPress={this.props.onPress}
+            underlayColor='#e4083f'
+            activeOpacity={0.5}
+        >
+            <View
+                style={styles.setBtnStyle}>
+                <Text
+                    style={styles.textStyle}>
+                    {this.props.title}
+                </Text>
+            </View>
+        </TouchableOpacity>;
+    }
+}
+
 class Index extends Component {
     constructor(props) {
         super(props);
@@ -228,43 +246,41 @@ class Index extends Component {
         this.page = 1;
         const that = this;
 
-        api
-            .getMembersList(this.page, this.filter)
-            .then(
-                function (message) {
-                    const _list = message.data.data;
+        api.getMembersList(this.page, this.filter).then(
+            function (message) {
+                const _list = message.data.data;
 
-                    let isLoadMore = false;
-                    if (_list.length === 10) {
-                        isLoadMore = true;
-                    }
+                let isLoadMore = false;
+                if (_list.length === 10) {
+                    isLoadMore = true;
+                }
 
-                    if (message.ad !== undefined) {
-                        // _list.unshift(message.ad);
-                        _list.push(message.ad);
-                    }
-                    if (!Utils.isEmpty(message.headerdata)) {
-                        that.setState({
-                            headerData: message.headerdata,
-                        });
-                    }
-
-                    const _loadMoreText =
-                        isLoadMore === true ? '正在加载更多...' : '没有了';
+                if (message.ad !== undefined) {
+                    // _list.unshift(message.ad);
+                    _list.push(message.ad);
+                }
+                if (!Utils.isEmpty(message.headerdata)) {
                     that.setState({
-                        loadMoreText: _loadMoreText,
-                        isLoadMore,
-                        infoList: _list,
-                        loading: false,
+                        headerData: message.headerdata,
                     });
-                },
-                function (error) {
-                    that.setState({
-                        loading: false,
-                    });
-                    Toast.info('网络错误！请检查后再次尝试！');
-                },
-            )
+                }
+
+                const _loadMoreText =
+                    isLoadMore === true ? '正在加载更多...' : '没有了';
+                that.setState({
+                    loadMoreText: _loadMoreText,
+                    isLoadMore,
+                    infoList: _list,
+                    loading: false,
+                });
+            },
+            function (error) {
+                that.setState({
+                    loading: false,
+                });
+                Toast.info('网络错误！请检查后再次尝试！');
+            },
+        )
             .done();
     };
 
@@ -465,37 +481,37 @@ class Index extends Component {
         const that = this;
         // Toast.info('正在加载更多...', 1, undefined, false);
         api.getMembersList(this.page, this.filter).then(
-                function (message) {
-                    let isLoadMore = false;
-                    let _list = message.data.data;
-                    if (_list.length === 10) {
-                        isLoadMore = true;
-                    }
+            function (message) {
+                let isLoadMore = false;
+                let _list = message.data.data;
+                if (_list.length === 10) {
+                    isLoadMore = true;
+                }
 
-                    if (message.ad !== undefined) {
-                        // _list.unshift(message.ad);
-                        _list.push(message.ad);
-                    }
+                if (message.ad !== undefined) {
+                    // _list.unshift(message.ad);
+                    _list.push(message.ad);
+                }
 
-                    that.setState({
-                        loadMoreText:
-                            isLoadMore === true ? that.state.loadMoreText : '没有了',
-                        isLoadMore,
-                        infoList: that.state.infoList.concat(_list),
-                    });
-                    if (!isLoadMore) {
-                        Toast.info('没有了', 1, undefined, false);
-                    } else {
-                        // Toast.info('正在加载更多...', 1, undefined, false);
-                    }
-                },
-                function (error) {
-                    that.setState({
-                        isLoadMore: true,
-                    });
-                    Toast.info('网络错误！请检查后再次尝试！');
-                },
-            ).done();
+                that.setState({
+                    loadMoreText:
+                        isLoadMore === true ? that.state.loadMoreText : '没有了',
+                    isLoadMore,
+                    infoList: that.state.infoList.concat(_list),
+                });
+                if (!isLoadMore) {
+                    Toast.info('没有了', 1, undefined, false);
+                } else {
+                    // Toast.info('正在加载更多...', 1, undefined, false);
+                }
+            },
+            function (error) {
+                that.setState({
+                    isLoadMore: true,
+                });
+                Toast.info('网络错误！请检查后再次尝试！');
+            },
+        ).done();
     };
 
     UNSAFE_componentWillReceiveProps(nextProps: Readonly<P>, nextContext: any): void {
@@ -531,11 +547,11 @@ class Index extends Component {
                         if (params.version.j_register_status === 0) {
                             let uid = params.version.uid;
                             let jUserName = config.jMessageAccountHeader + uid;
-                            that.registerToJIM(jUserName, jUserName);
+                            // that.registerToJIM(jUserName, jUserName);
                         }
                         //如果用户创建成功检测是否加入了群
                         else {
-                            that.getGroupIds();
+                            // that.getGroupIds();
                         }
 
                         if (config.state !== '1') {
@@ -566,194 +582,6 @@ class Index extends Component {
                 },
             )
             .done();
-    }
-
-    registerToJIM(username, password) {
-        JMessage.register(
-            {
-                username: username,
-                password: password,
-            },
-            () => {
-                // Toast.showShortCenter("注册成功");
-                StorageUtil.set('username', {username: username});
-                // 关闭当前页面
-                // this.props.navigation.goBack();
-                // 跳转到登录界面
-                // this.props.navigation.navigate("Login");
-                this.loginToJIM(username, password);
-            },
-            (e) => {
-                Toast.info('聊天系统注册失败', 1, undefined, false);
-                // Toast.showShortCenter("注册失败：" + e);
-            },
-        );
-    }
-
-    // 登录极光IM服务器
-    loginToJIM(username, password) {
-        // 初始化数据库
-        DBHelper.init(username);
-        // 获取未读好友消息数
-        DBHelper.getUnreadFriendMsgCount((count) => {
-            if (count > 0) {
-                // TabConfig.TAB_CONTACT_DOT_COUNT = count;
-            }
-        });
-        this.loginUsername = username;
-        this.loginPassword = password;
-        // 登录极光IM
-        JMessage.login(
-            {
-                username: username,
-                password: password,
-            },
-            () => {
-                //加西班牙群
-                this.getGroupIds();
-                // 登录IM服务器成功
-                this.getCurrentUserInfo();
-                this.jMessageUpdateMyInfo(config.name);
-            },
-            (e) => {
-                // Toast.showShortCenter("登录IM失败：" + e.description);
-                Toast.info('登录聊天系统失败', 1, undefined, false);
-            },
-        );
-    }
-
-    jMessageUpdateMyInfo(nickname) {
-        JMessage.updateMyInfo(
-            {nickname: nickname},
-            () => {
-                // do something.
-            },
-            (error) => {
-            },
-        );
-    }
-
-    getGroupIds() {
-        JMessage.getGroupIds(
-            (result) => {
-                /**
-                 * result {Array[Number]} 当前用户所加入的群组的groupID的list
-                 */
-                let description = '';
-
-                for (let i in result) {
-                    description += i + '= ' + result[i] + ';';
-                }
-
-                console.log('qianyuan', 'result=======' + description);
-                //比对服务端群组数量，添加成员进群
-                if (result.length > 0) {
-                } else {
-                    jMessage
-                        .addMembers()
-                        .then(
-                            function (params) {
-                                console.log('qianyuan', params);
-                            },
-                            function (error) {
-                                let description = '';
-
-                                for (let i in error) {
-                                    description += i + '= ' + error[i] + ';';
-                                }
-                                console.log('qianyuan', 'joingroup=======' + description);
-                            },
-                        )
-                        .done();
-                }
-            },
-            (error) => {
-                if (error.code === 863004) {
-                    userInfoUtil.logout();
-                    AntmModal.alert('提醒', '当前未登录,您是否已在其他设备登录过?', [
-                        {
-                            text: '知道了',
-                        },
-                    ]);
-                } else {
-                    let description = '';
-
-                    for (let i in error) {
-                        description += i + '= ' + error[i] + ';';
-                    }
-
-                    console.log('qianyuan', 'error=======' + description);
-                }
-                /**
-                 * error {Object} {code:Number,desc:String}
-                 */
-            },
-        );
-    }
-
-    getCurrentUserInfo() {
-        // JMessage.getMyInfo(info => {
-        //     if (info.username === undefined) {
-        //         // 未登录
-        //     } else {
-        //         // 已登录
-        //         MessageUserInfoUtil.userInfo = info;
-        //     }
-        //     // LogUtil.d("getMyInfo: " + JSON.stringify(info));
-        // });
-        JMessage.getUserInfo(
-            {username: this.loginUsername, appKey: Global.JIMAppKey},
-            (info) => {
-                // LogUtil.d("getUserInfo: " + JSON.stringify(info));
-                MessageUserInfoUtil.userInfo = info;
-                StorageUtil.set('hasLogin', {hasLogin: true});
-                StorageUtil.set('username', {username: this.loginUsername});
-                StorageUtil.set('password', {password: this.loginPassword});
-                // const resetAction = StackActions.reset({
-                //   index: 0,
-                //   actions: [NavigationActions.navigate({ routeName: "Home" })]
-                // });
-                // this.props.navigation.dispatch(resetAction);
-                this.postJMessageStatus().then((r) => {
-                });
-            },
-            (error) => {
-                // LogUtil.d("getUserInfo, error = " + error);
-            },
-        );
-    }
-
-    //更新即时通讯注册状态
-    postJMessageStatus() {
-        let url = config.host + '/api/v1/pjs';
-        let obj = {status: 1};
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json;charset=utf-8',
-                Authorization: config.access_token,
-            },
-            body: JSON.stringify(obj),
-        })
-            .then((response) => {
-                return response.json();
-            })
-            .then((responseJSON) => {
-                if (responseJSON.code === 200) {
-                    // this.props.navigation.replace('EditWdIndex');
-                    // this.setState({
-                    //     loading: false
-                    // });
-                }
-            })
-            .catch((error) => {
-                this.setState({
-                    loading: false,
-                });
-                console.log('error:', error);
-                Toast.info('发生错误,请检查后再试', 1, undefined, false);
-            });
     }
 
     personalInfo(title, content) {
@@ -843,6 +671,31 @@ class Index extends Component {
         return (
             <SafeAreaView style={{flex: 1, backgroundColor: '#ffffff'}}>
                 <Provider style={{flex: 1, backgroundColor: '#ffffff'}}>
+                    {/*<Button title="isNotificationEnabled"*/}
+                    {/*        onPress={() =>  JPush.isNotificationEnabled((item) =>{*/}
+                    {/*            console.log("qianyuan",item);*/}
+                    {/*        })*/}
+                    {/*        }/>*/}
+
+                    {/*<Button title="setAlias"*/}
+                    {/*        onPress={() =>  JPush.setAlias({sequence:1,alias:'qy_89'})*/}
+                    {/*        }/>*/}
+
+                    {/*<Button title="getRegistrationID"*/}
+                    {/*        onPress={() =>  JPush.getRegistrationID((id)=>{*/}
+                    {/*            console.log("qianyuan",id);*/}
+                    {/*        })*/}
+                    {/*        }/>*/}
+
+                    {/*<Button title="addLocalNotification"*/}
+                    {/*        onPress={() =>  JPush.addLocalNotification({*/}
+                    {/*            messageID: "123456789",*/}
+                    {/*            title: "title123",*/}
+                    {/*            content: "content123",*/}
+                    {/*            extras: {"key123": "value123"}*/}
+                    {/*        })*/}
+                    {/*        }/>*/}
+
                     {this.state.guide ?
                         <RNModel
                             transparent={true}
@@ -851,12 +704,12 @@ class Index extends Component {
                                 flex: 1,
                                 justifyContent: 'center',
                                 alignItems: 'center',
-                                backgroundColor: 'rgba(0, 0, 0, 0.5)'
+                                backgroundColor: 'rgba(0, 0, 0, 0.5)',
                             }}>
                                 <View
                                     style={{
                                         borderRadius: 15, borderWidth: 3, borderColor: 'pink',
-                                        backgroundColor: 'white'
+                                        backgroundColor: 'white',
                                     }}
                                 >
                                     <View style={{
@@ -865,32 +718,32 @@ class Index extends Component {
                                         // borderColor: 'pink',
                                         margin: 10,
                                         alignItems: 'center',
-                                        justifyContent: 'center'
+                                        justifyContent: 'center',
                                     }}>
                                         <Text style={{
                                             textAlign: 'center',
                                             textAlignVertical: 'center',
-                                            color: "pink",
+                                            color: 'pink',
                                             fontSize: 16,
                                         }}>请先注册或登录</Text>
                                         <Text style={{
                                             textAlign: 'center',
                                             textAlignVertical: 'center',
-                                            color: "pink",
+                                            color: 'pink',
                                             fontSize: 16,
-                                            marginTop: 5
+                                            marginTop: 5,
                                         }}>然后完善您的个人资料</Text>
                                         <Text style={{
                                             textAlign: 'center',
                                             textAlignVertical: 'center',
-                                            color: "pink",
+                                            color: 'pink',
                                             fontSize: 16,
-                                            marginTop: 5
+                                            marginTop: 5,
                                         }}>注定的另一半将更容易找到您</Text>
                                     </View>
                                     <TouchableOpacity activeOpacity={0.6} onPress={() => {
                                         this.setState({
-                                            guide: false
+                                            guide: false,
                                         });
                                         this.props.navigation.navigate('LoginRegister');
                                     }}>
@@ -902,7 +755,7 @@ class Index extends Component {
                                                 margin: 10,
                                                 height: 30,
                                                 alignItems: 'center',
-                                                justifyContent: 'center'
+                                                justifyContent: 'center',
                                             }}
                                         >
                                             {/*<Image style={{width: width - 150, height: 30, marginTop: 5}}*/}
@@ -911,14 +764,14 @@ class Index extends Component {
                                             <Text style={{
                                                 textAlign: 'center',
                                                 textAlignVertical: 'center',
-                                                color: "pink",
+                                                color: 'pink',
                                                 fontSize: 16,
                                             }}>去注册</Text>
                                         </View>
                                     </TouchableOpacity>
                                     <TouchableOpacity activeOpacity={0.6} onPress={() => {
                                         this.setState({
-                                            guide: false
+                                            guide: false,
                                         });
                                         this.props.navigation.navigate('LoginIndex');
                                     }}>
@@ -930,7 +783,7 @@ class Index extends Component {
                                                 margin: 10,
                                                 height: 30,
                                                 alignItems: 'center',
-                                                justifyContent: 'center'
+                                                justifyContent: 'center',
                                             }}
                                         >
                                             {/*<Image style={{width: width - 150, height: 30, marginTop: 5}}*/}
@@ -938,15 +791,15 @@ class Index extends Component {
                                             <Text style={{
                                                 textAlign: 'center',
                                                 textAlignVertical: 'center',
-                                                color: "pink",
+                                                color: 'pink',
                                                 fontSize: 16,
                                             }}>去登录</Text>
                                         </View>
                                     </TouchableOpacity>
                                     <TouchableOpacity activeOpacity={0.6} onPress={() => {
                                         this.setState({
-                                            guide: false
-                                        })
+                                            guide: false,
+                                        });
                                     }}>
                                         <View
                                             style={{
@@ -956,7 +809,7 @@ class Index extends Component {
                                                 margin: 10,
                                                 height: 30,
                                                 alignItems: 'center',
-                                                justifyContent: 'center'
+                                                justifyContent: 'center',
                                             }}
                                         >
                                             {/*<Image style={{width: width - 150, height: 30, marginTop: 5}}*/}
@@ -964,7 +817,7 @@ class Index extends Component {
                                             <Text style={{
                                                 textAlign: 'center',
                                                 textAlignVertical: 'center',
-                                                color: "pink",
+                                                color: 'pink',
                                                 fontSize: 16,
                                             }}>取消</Text>
                                         </View>
@@ -1026,7 +879,7 @@ class Index extends Component {
                                     this._postReport(JSON.stringify({
                                         type: 1,
                                         report_id: this.state.reportID,
-                                        data: '不感兴趣'
+                                        data: '不感兴趣',
                                     }));
                                 }}
                             />
@@ -1037,7 +890,7 @@ class Index extends Component {
                                     this._postReport(JSON.stringify({
                                         type: 1,
                                         report_id: this.state.reportID,
-                                        data: '色情低俗'
+                                        data: '色情低俗',
                                     }));
                                 }}
                             />
@@ -1048,7 +901,7 @@ class Index extends Component {
                                     this._postReport(JSON.stringify({
                                         type: 1,
                                         report_id: this.state.reportID,
-                                        data: '政治敏感'
+                                        data: '政治敏感',
                                     }));
                                 }}
                             />
@@ -1059,7 +912,7 @@ class Index extends Component {
                                     this._postReport(JSON.stringify({
                                         type: 1,
                                         report_id: this.state.reportID,
-                                        data: '广告'
+                                        data: '广告',
                                     }));
                                 }}
                             />
@@ -1071,7 +924,7 @@ class Index extends Component {
                                     this._postReport(JSON.stringify({
                                         type: 1,
                                         report_id: this.state.reportID,
-                                        data: '令人恶心'
+                                        data: '令人恶心',
                                     }));
                                 }}
                             />
@@ -1082,7 +935,7 @@ class Index extends Component {
                                     this._postReport(JSON.stringify({
                                         type: 1,
                                         report_id: this.state.reportID,
-                                        data: '违纪违法'
+                                        data: '违纪违法',
                                     }));
                                 }}
                             />
@@ -1093,7 +946,7 @@ class Index extends Component {
                                     this._postReport(JSON.stringify({
                                         type: 1,
                                         report_id: this.state.reportID,
-                                        data: '其他'
+                                        data: '其他',
                                     }));
                                 }}
                             />
@@ -1102,8 +955,8 @@ class Index extends Component {
                                 bottomDivider={true}
                                 onPress={() => {
                                     this.setState({
-                                        reportViewStatus: false
-                                    })
+                                        reportViewStatus: false,
+                                    });
                                 }}
                             />
                         </Modal>

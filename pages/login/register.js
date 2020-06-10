@@ -8,7 +8,7 @@ import {
     ScrollView,
     ActivityIndicator,
     StyleSheet, TextInput, TouchableOpacity, Platform,
-    SafeAreaView
+    SafeAreaView, DeviceEventEmitter,
 } from 'react-native';
 import {
     Toast, Picker, Modal, Provider
@@ -20,13 +20,12 @@ import CommonTitleBar from '../views/CommonTitleBar';
 import LoginApi from '../service/loginApi';
 import WebView from "../views/WebView";
 import LoadingView from "../views/LoadingView";
-import JMessage from "jmessage-react-plugin";
-import jMessage from "../service/jMessage";
 import DBHelper from "../util/DBHelper";
 import Global from "../util/Global";
 import MessageUserInfoUtil from "../util/MessageUserInfoUtil";
 import systemInfoApi from "../service/SystemInfoApi";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import _getUserInfo from './index';
 
 const {width} = Dimensions.get('window');
 
@@ -120,8 +119,9 @@ class Index extends Component {
                 StorageUtil.set('vip_start_time', 0);
                 StorageUtil.set('coin', 0);
 
-                this.getSystemInfo();
-
+                let userInfo = await _getUserInfo(access_token);
+                //发送登录成功消息
+                DeviceEventEmitter.emit('appLogin', {user_info:userInfo,access_token:access_token,refresh_token:refresh_token});
             } else if (response['code'] === '201') {
                 Toast.info('验证码错误,或者过期', 1, undefined, false);
                 this.setState({
@@ -136,161 +136,6 @@ class Index extends Component {
 
         }
     };
-
-    getSystemInfo() {
-        let that = this;
-        systemInfoApi.getSysInfo().then(function (params) {
-            let uid = params.version.uid;
-            let jUserName = serverConfig.jMessageAccountHeader + uid;
-            that.registerToJIM(jUserName, jUserName);
-        }, function (error) {
-
-        }).done();
-    }
-
-    registerToJIM(username, password) {
-        JMessage.register(
-            {
-                username: username,
-                password: password
-            },
-            () => {
-                // Toast.showShortCenter("注册成功");
-                StorageUtil.set("username", {username: username});
-                // 关闭当前页面
-                // this.props.navigation.goBack();
-                // 跳转到登录界面
-                // this.props.navigation.navigate("Login");
-                this.loginToJIM(username, password);
-            },
-            e => {
-                Toast.info('聊天系统注册失败', 1, undefined, false);
-                // Toast.showShortCenter("注册失败：" + e);
-            }
-        );
-    }
-
-    // 登录极光IM服务器
-    loginToJIM(username, password) {
-        // 初始化数据库
-        DBHelper.init(username);
-        // 获取未读好友消息数
-        DBHelper.getUnreadFriendMsgCount(count => {
-            if (count > 0) {
-                // TabConfig.TAB_CONTACT_DOT_COUNT = count;
-            }
-        });
-        this.loginUsername = username;
-        this.loginPassword = password;
-        // 登录极光IM
-        JMessage.login(
-            {
-                username: username,
-                password: password
-            },
-            () => {
-                this.getGroupIds();
-                this.jMessageUpdateMyInfo(serverConfig.name);
-                // 登录IM服务器成功
-                this.getCurrentUserInfo();
-            },
-            e => {
-                // Toast.showShortCenter("登录IM失败：" + e.description);
-                Toast.info('登录聊天系统失败', 1, undefined, false);
-            }
-        );
-    }
-
-    jMessageUpdateMyInfo(nickname) {
-        JMessage.updateMyInfo({nickname: nickname},
-            () => {
-                // do something.
-            }, (error) => {
-            })
-    }
-
-    getGroupIds() {
-        JMessage.getGroupIds(
-            (result) => {
-                /**
-                 * result {Array[Number]} 当前用户所加入的群组的groupID的list
-                 */
-                if (result.length > 0) {
-                } else {
-                    jMessage.addMembers().then(function (params) {
-                    }, function (error) {
-
-                    }).done();
-                }
-            }, (error) => {
-                /**
-                 * error {Object} {code:Number,desc:String}
-                 */
-            }
-        )
-    }
-
-    getCurrentUserInfo() {
-        // JMessage.getMyInfo(info => {
-        //     if (info.username === undefined) {
-        //         // 未登录
-        //     } else {
-        //         // 已登录
-        //         MessageUserInfoUtil.userInfo = info;
-        //     }
-        //     // LogUtil.d("getMyInfo: " + JSON.stringify(info));
-        // });
-        JMessage.getUserInfo(
-            {username: this.loginUsername, appKey: Global.JIMAppKey},
-            info => {
-                // LogUtil.d("getUserInfo: " + JSON.stringify(info));
-                MessageUserInfoUtil.userInfo = info;
-                StorageUtil.set("hasLogin", {hasLogin: true});
-                StorageUtil.set("username", {username: this.loginUsername});
-                StorageUtil.set("password", {password: this.loginPassword});
-                // const resetAction = StackActions.reset({
-                //   index: 0,
-                //   actions: [NavigationActions.navigate({ routeName: "Home" })]
-                // });
-                // this.props.navigation.dispatch(resetAction);
-                this.postJMessageStatus().then(r => {
-                });
-            },
-            error => {
-                // LogUtil.d("getUserInfo, error = " + error);
-            }
-        );
-    }
-
-    //更新即时通讯注册状态
-    postJMessageStatus() {
-        let url = serverConfig.host + '/api/v1/pjs';
-        let obj = {'status': 1};
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=utf-8',
-                'Authorization': serverConfig.access_token
-            },
-            body: JSON.stringify(obj)
-        }).then((response) => {
-            return response.json();
-        }).then((responseJSON) => {
-            if (responseJSON.code === 200) {
-                this.props.navigation.replace('EditWdIndex');
-                this.setState({
-                    loading: false
-                });
-            }
-        }).catch((error) => {
-            this.setState({
-                loading: false
-            });
-            console.log('error:', error);
-            Toast.info('发生错误,请检查后再试', 1, undefined, false);
-        });
-    }
 
     getResister(mobile, password, nickname, code) {
         let url = path.host + '/api/register';

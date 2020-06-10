@@ -18,14 +18,12 @@ import {Button, Icon, ListItem} from 'react-native-elements';
 import SYImagePicker from 'react-native-syan-image-picker';
 import {DatePicker, TextareaItem, Picker, Toast, Modal, Provider, Pagination} from '@ant-design/react-native';
 import api from "../service/personalInformationApi";
-import jMessage from "../service/jMessage";
 import serverConfig from '../service/config';
 
 import find from 'lodash/find';
 
 import cache from '../util/cache';
 
-import JMessage from "jmessage-react-plugin";
 import StorageUtil from "../util/StorageUtil";
 import DBHelper from "../util/DBHelper";
 import MessageUserInfoUtil from "../util/MessageUserInfoUtil";
@@ -152,135 +150,6 @@ class Index extends Component {
     componentWillUnmount() {
         cache.language = [];
         cache.nlanguage = [];
-    }
-
-    // 注册极光IM
-    registerToJIM(username, password) {
-        JMessage.register(
-            {
-                username: username,
-                password: password
-            },
-            () => {
-                // Toast.showShortCenter("注册成功");
-                StorageUtil.set("username", {username: username});
-                // 关闭当前页面
-                // this.props.navigation.goBack();
-                // 跳转到登录界面
-                // this.props.navigation.navigate("Login");
-                this.loginToJIM(username, password);
-            },
-            e => {
-                Toast.info('聊天系统注册失败', 1, undefined, false);
-                // Toast.showShortCenter("注册失败：" + e);
-            }
-        );
-    }
-
-    // 登录极光IM服务器
-    loginToJIM(username, password) {
-        // 初始化数据库
-        DBHelper.init(username);
-        // 获取未读好友消息数
-        DBHelper.getUnreadFriendMsgCount(count => {
-            if (count > 0) {
-                // TabConfig.TAB_CONTACT_DOT_COUNT = count;
-            }
-        });
-        this.loginUsername = username;
-        this.loginPassword = password;
-        // 登录极光IM
-        JMessage.login(
-            {
-                username: username,
-                password: password
-            },
-            () => {
-                // this.getGroupIds();
-                // 登录IM服务器成功
-                this.getCurrentUserInfo();
-            },
-            e => {
-                // Toast.showShortCenter("登录IM失败：" + e.description);
-                Toast.info('登录聊天系统失败', 1, undefined, false);
-            }
-        );
-    }
-
-    getGroupIds() {
-        JMessage.getGroupIds(
-            (result) => {
-                /**
-                 * result {Array[Number]} 当前用户所加入的群组的groupID的list
-                 */
-                if (result.length > 0) {
-                } else {
-                    jMessage.addMembers().then(function (params) {
-                    }, function (error) {
-
-                    }).done();
-                }
-            }, (error) => {
-                /**
-                 * error {Object} {code:Number,desc:String}
-                 */
-            }
-        )
-    }
-
-    getCurrentUserInfo() {
-        // JMessage.getMyInfo(info => {
-        //     if (info.username === undefined) {
-        //         // 未登录
-        //     } else {
-        //         // 已登录
-        //         MessageUserInfoUtil.userInfo = info;
-        //     }
-        //     // LogUtil.d("getMyInfo: " + JSON.stringify(info));
-        // });
-        JMessage.getUserInfo(
-            {username: this.loginUsername, appKey: Global.JIMAppKey},
-            info => {
-                // LogUtil.d("getUserInfo: " + JSON.stringify(info));
-                MessageUserInfoUtil.userInfo = info;
-                StorageUtil.set("hasLogin", {hasLogin: true});
-                StorageUtil.set("username", {username: this.loginUsername});
-                StorageUtil.set("password", {password: this.loginPassword});
-                // const resetAction = StackActions.reset({
-                //   index: 0,
-                //   actions: [NavigationActions.navigate({ routeName: "Home" })]
-                // });
-                // this.props.navigation.dispatch(resetAction);
-                this.postJMessageStatus();
-            },
-            error => {
-                // LogUtil.d("getUserInfo, error = " + error);
-            }
-        );
-    }
-
-    //更新即时通讯注册状态
-    postJMessageStatus() {
-        let url = serverConfig.host + '/api/v1/pjs';
-        let obj = {'status': 1};
-        return fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=utf-8',
-                'Authorization': serverConfig.access_token
-            },
-            body: JSON.stringify(obj)
-        }).then((response) => {
-            return response.json();
-        }).then((responseJSON) => {
-            if (responseJSON.code === 200) {
-
-            }
-        }).catch((error) => {
-            console.log('error:', error);
-            Toast.info('发生错误,请检查后再试', 1, undefined, false);
-        });
     }
 
     /**

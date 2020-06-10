@@ -104,7 +104,7 @@ class Index extends Component {
                             detail0: element.detail,
                             service_detail0: element.service_detail,
                         });
-                        if (Platform.OS === 'android' && Global.IsHuawei) {
+                        if (Platform.OS === 'android' && Global.IsPayPal) {
                             that.setState({
                                 price0: element.price,
                             });
@@ -116,7 +116,7 @@ class Index extends Component {
                             detail1: element.detail,
                             service_detail1: element.service_detail,
                         });
-                        if (Platform.OS === 'android' && Global.IsHuawei) {
+                        if (Platform.OS === 'android' && Global.IsPayPal) {
                             that.setState({
                                 price1: element.price,
                             });
@@ -128,7 +128,7 @@ class Index extends Component {
                             detail2: element.detail,
                             service_detail2: element.service_detail,
                         });
-                        if (Platform.OS === 'android' && Global.IsHuawei) {
+                        if (Platform.OS === 'android' && Global.IsPayPal) {
                             that.setState({
                                 price2: element.price,
                             });
@@ -153,7 +153,7 @@ class Index extends Component {
                     that.setState({visible: false})
                 });
             } else {
-                if (!Global.IsHuawei) {
+                if (!Global.IsPayPal) {
                     RNIap.consumeAllItemsAndroid().then(r => {
                     });
                     that.getProductsFromApple().then(r => {
@@ -212,7 +212,7 @@ class Index extends Component {
             this.requestPurchase(itemSkus[product_type]);
         } else {
             // console.log('Available purchases :: ', itemSkus[product_type]);
-            if (Global.IsHuawei) {
+            if (Global.IsPayPal) {
                 this.setState({
                     payViewStatus: true
                 });
@@ -232,7 +232,7 @@ class Index extends Component {
             console.warn(err); // standardized err.code and err.message available
         }
 
-        purchaseUpdateSubscription = Global.IsHuawei ? null : purchaseUpdatedListener(
+        purchaseUpdateSubscription = Global.IsPayPal ? null : purchaseUpdatedListener(
             async (purchase: InAppPurchase | SubscriptionPurchase) => {
                 const receipt = purchase.transactionReceipt;
                 console.log(receipt);
@@ -302,7 +302,7 @@ class Index extends Component {
             },
         );
 
-        purchaseErrorSubscription = Global.IsHuawei ? null : purchaseErrorListener(
+        purchaseErrorSubscription = Global.IsPayPal ? null : purchaseErrorListener(
             (error: PurchaseError) => {
                 console.log('purchaseErrorListener', error);
                 // Alert.alert('purchase error', JSON.stringify(error));

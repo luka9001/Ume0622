@@ -1,3 +1,4 @@
+import moment from 'moment';
 // 根据时间戳格式化时间为**分钟前，**天前这种格式
 function getFormattedTime(timestamp) {
     timestamp = timestamp.substring(0, 19);
@@ -12,7 +13,7 @@ function getFormattedTime(timestamp) {
     if (delta < hour) {
         // 显示多少分钟前
         let n = parseInt(delta / 60);
-        if (n == 0) {
+        if (n === 0) {
             return '刚刚';
         }
         return n + '分钟前';
@@ -56,12 +57,19 @@ function formatChatTime(timestamp) {
     }
 }
 
-function formatWebSocketMessageTime(messageDate) {
-    let today = getDateTodayStr();
-    if (messageDate.indexOf(today) === -1) {
+function formatWebSocketMessageTime(timeStr) {
+    let date = moment(Date.now());
+    let day = date.format('YYYY年MM月DD日');
+    let year = date.format('YYYY年');
+    let messageDate = moment(timeStr).format('YYYY年MM月DD日 hh:mm');
+    if(messageDate.indexOf(day) !== -1){
+        return moment(timeStr).format('hh:mm');
+    }
+    else if(messageDate.indexOf(year) !== -1){
+        return moment(timeStr).format('MM月DD日 hh:mm');
+    }
+    else{
         return messageDate;
-    } else {
-        return messageDate.split(' ')[1];
     }
 }
 

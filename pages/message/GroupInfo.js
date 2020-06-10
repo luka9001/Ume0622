@@ -9,7 +9,6 @@ import {
     SafeAreaView
 } from "react-native";
 import {Modal, TextareaItem, Toast, Provider} from "@ant-design/react-native";
-import JMessage from "jmessage-react-plugin";
 import jMessage from "../service/jMessage";
 import config from "../service/config";
 import {RecyclerListView, LayoutProvider, DataProvider} from "recyclerlistview";
@@ -57,20 +56,7 @@ export default class GroupInfoScreen extends Component {
     getGroupMembers() {
         this.page = 1;
         const that = this;
-        console.log(this.props.navigation.state.params.id);
-        JMessage.getGroupMembers({id: this.props.navigation.state.params.id},
-            (groupMemberInfoArray) => {  // 群成员数组
-                // do something.
-                // console.log(groupMemberInfoArray);
-                this.setState({groupMembersCount: groupMemberInfoArray.length});
-                totalRecord = groupMemberInfoArray.length;
-                totalPage = Math.ceil(totalRecord / maxResult);
-                const array = this.pagination(this.page, maxResult, groupMemberInfoArray);
-                if (array.length > 0) {
-                    let _array = [];
-                    array.forEach(element => {
-                        _array.push(element.user.username.split(config.jMessageAccountHeader)[1]);
-                    });
+        let _array = null;
                     jMessage.getMembersInfo(JSON.stringify({'array': _array})).then(function (message) {
                         const _list = message.data;
                         let isLoadMore = false;
@@ -92,28 +78,12 @@ export default class GroupInfoScreen extends Component {
                         });
                         // alert('发生错误,请联系官方客服');
                     }).done();
-                }
-            }, (error) => {
-                let code = error.code;
-                let desc = error.description;
-            })
     }
 
     getMoreGroupMembers() {
         this.page = this.page + 1;
         const that = this;
-        JMessage.getGroupMembers({id: this.props.navigation.state.params.id},
-            (groupMemberInfoArray) => {  // 群成员数组
-                // do something.
-                this.setState({groupMembersCount: groupMemberInfoArray.length});
-                totalRecord = groupMemberInfoArray.length;
-                totalPage = Math.ceil(totalRecord / maxResult);
-                const array = this.pagination(this.page, maxResult, groupMemberInfoArray);
-                if (array.length > 0) {
-                    let _array = [];
-                    array.forEach(element => {
-                        _array.push(element.user.username.split(config.jMessageAccountHeader)[1]);
-                    });
+
                     jMessage.getMembersInfo(JSON.stringify({'array': _array})).then(function (message) {
                         const _list = message.data;
 
@@ -141,11 +111,6 @@ export default class GroupInfoScreen extends Component {
                         });
                         // alert('发生错误,请联系官方客服');
                     }).done();
-                }
-            }, (error) => {
-                let code = error.code;
-                let desc = error.description;
-            })
     }
 
     pagination(pageNo, pageSize, array) {

@@ -4,7 +4,6 @@
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTRootView.h>
 
-#import <RCTJMessageModule.h>
 #import <RCTJPushModule.h>
 
 #ifdef NSFoundationVersionNumber_iOS_9_x_Max
@@ -34,19 +33,9 @@ static void InitializeFlipper(UIApplication *application) {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [JMessage setupJMessage:launchOptions
-                     appKey:@"27837b1c1fed6927c288e3df"
-                    channel:@""
-           apsForProduction:YES
-                   category:nil
-             messageRoaming:true];
-
-  [JMessage addDelegate:self withConversation:nil];
-
   // JPush初始化配置
   [JPUSHService setupWithOption:launchOptions appKey:@"27837b1c1fed6927c288e3df"
-                        channel:@""
-               apsForProduction:YES];
+                         channel:@"dev" apsForProduction:YES];
   // APNS
   JPUSHRegisterEntity * entity = [[JPUSHRegisterEntity alloc] init];
   if (@available(iOS 12.0, *)) {
@@ -76,13 +65,6 @@ static void InitializeFlipper(UIApplication *application) {
   self.window.rootViewController = rootViewController;
   [self.window makeKeyAndVisible];
   return YES;
-}
-
-//JMessage 离线消息监听
-- (void)onSyncOfflineMessageConversation:(JMSGConversation *)conversation
-                         offlineMessages:(NSArray JMSG_GENERIC ( __kindof JMSGMessage *) *)offlineMessages {
-  [RCTJMessageEventQueue sharedInstance].offlineConversation = conversation;
-  [RCTJMessageEventQueue sharedInstance].offlineMsgArray = offlineMessages;
 }
 
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
@@ -125,8 +107,7 @@ static void InitializeFlipper(UIApplication *application) {
     [[NSNotificationCenter defaultCenter] postNotificationName:J_LOCAL_NOTIFICATION_ARRIVED_EVENT object:userInfo];
   }
   //需要执行这个方法，选择是否提醒用户，有 Badge、Sound、Alert 三种类型可以选择设置
-//  completionHandler(UNNotificationPresentationOptionAlert);
-  completionHandler(UNNotificationPresentationOptionSound);
+  completionHandler(UNNotificationPresentationOptionAlert);
 }
 
 //iOS 10 消息事件回调
@@ -156,7 +137,6 @@ static void InitializeFlipper(UIApplication *application) {
   NSDictionary * userInfo = [notification userInfo];
   [[NSNotificationCenter defaultCenter] postNotificationName:J_CUSTOM_NOTIFICATION_EVENT object:userInfo];
 }
-
 //************************************************JPush end************************************************
 
 

@@ -3417,7 +3417,7 @@ iterall@^1.2.2:
   version "1.3.0"
   resolved "https://registry.yarnpkg.com/iterall/-/iterall-1.3.0.tgz#afcb08492e2915cbd8a0884eb93a8c94d0d72fea"
 
-jcore-react-native@>=1.3.1, jcore-react-native@^1.8.0:
+jcore-react-native@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/jcore-react-native/-/jcore-react-native-1.8.0.tgz#924ebe30c0d4fa6a3a52a7fd162e965facc90763"
 
@@ -3837,15 +3837,9 @@ jetifier@^1.6.2:
   version "1.6.5"
   resolved "https://registry.yarnpkg.com/jetifier/-/jetifier-1.6.5.tgz#ea87324a4230bef20a9651178ecab978ee54a8cb"
 
-jmessage-react-plugin@^3.1.8:
-  version "3.1.8"
-  resolved "https://registry.yarnpkg.com/jmessage-react-plugin/-/jmessage-react-plugin-3.1.8.tgz#d479c40cb9ba3141f10169ab29a3488fc9ef25ef"
-  dependencies:
-    jcore-react-native ">=1.3.1"
-
 jpush-react-native@^2.8.0:
-  version "2.8.0"
-  resolved "https://registry.yarnpkg.com/jpush-react-native/-/jpush-react-native-2.8.0.tgz#a26acf2bef1929a6b637b2b9a142ad16a35ac9a7"
+  version "2.8.1"
+  resolved "https://registry.yarnpkg.com/jpush-react-native/-/jpush-react-native-2.8.1.tgz#bd3d955c46de5ff34390720f7c3aca4371f82958"
 
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"

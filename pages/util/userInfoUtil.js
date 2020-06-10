@@ -1,7 +1,6 @@
 import {AsyncStorage} from "react-native";
 import config from "../service/config";
 import Utils from '../util/Utils';
-import JMessage from "jmessage-react-plugin";
 import DBHelper from "./DBHelper";
 import StorageUtil from "./StorageUtil";
 import {Toast} from "@ant-design/react-native";
@@ -56,8 +55,7 @@ const userInfo = {
         AsyncStorage.setItem('state', '');
         AsyncStorage.setItem('sex', '');
         StorageUtil.set("vip_level", 0);
-        JMessage.logout();
-        DBHelper.reset();
+        // DBHelper.reset();
         StorageUtil.set("hasLogin", {hasLogin: false}, () => {
             CountEmitter.emit("notifyLogin");
         });

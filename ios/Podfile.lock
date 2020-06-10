@@ -69,9 +69,7 @@ PODS:
   - glog (0.3.5)
   - JCore (1.8.0):
     - React
-  - JMessageRN (3.1.8):
-    - React
-  - JPush (2.8.0):
+  - JPush (2.8.1):
     - React
   - libwebp (1.1.0):
     - libwebp/demux (= 1.1.0)
@@ -401,7 +399,6 @@ DEPENDENCIES:
   - Folly (from `../node_modules/react-native/third-party-podspecs/Folly.podspec`)
   - glog (from `../node_modules/react-native/third-party-podspecs/glog.podspec`)
   - JCore (from `../node_modules/jcore-react-native`)
-  - JMessageRN (from `../node_modules/jmessage-react-plugin`)
   - JPush (from `../node_modules/jpush-react-native`)
   - Permission-Camera (from `../node_modules/react-native-permissions/ios/Camera.podspec`)
   - Permission-MediaLibrary (from `../node_modules/react-native-permissions/ios/MediaLibrary.podspec`)
@@ -486,8 +483,6 @@ EXTERNAL SOURCES:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   JCore:
     :path: "../node_modules/jcore-react-native"
-  JMessageRN:
-    :path: "../node_modules/jmessage-react-plugin"
   JPush:
     :path: "../node_modules/jpush-react-native"
   Permission-Camera:
@@ -602,8 +597,7 @@ SPEC CHECKSUMS:
   Folly: 30e7936e1c45c08d884aa59369ed951a8e68cf51
   glog: 1f3da668190260b06b429bb211bfbee5cd790c28
   JCore: 1329e2407872f05e11e127123e9764ca3f9ee124
-  JMessageRN: b0ef767f01f5779713fab5c895101e1f199af48a
-  JPush: 3975ea3f302018054d0319f63aec45a4b8a56997
+  JPush: b389c8181b1a5f8978cd06a3811c76fbd848862c
   libwebp: 946cb3063cea9236285f7e9a8505d806d30e07f3
   OpenSSL-Universal: 8b48cc0d10c1b2923617dfe5c178aa9ed2689355
   Permission-Camera: 402f1ac15b962448d75e8cf2039d235e7bc09a85

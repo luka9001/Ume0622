@@ -119,7 +119,7 @@ class Index extends Component {
                             detail0: element.detail,
                             service_detail0: element.service_detail,
                         });
-                        if (Platform.OS === 'android' && Global.IsHuawei) {
+                        if (Platform.OS === 'android' && Global.IsPayPal) {
                             that.setState({
                                 price0: element.price,
                             });
@@ -132,7 +132,7 @@ class Index extends Component {
                             detail1: element.detail,
                             service_detail1: element.service_detail,
                         });
-                        if (Platform.OS === 'android' && Global.IsHuawei) {
+                        if (Platform.OS === 'android' && Global.IsPayPal) {
                             that.setState({
                                 price1: element.price,
                             });
@@ -145,7 +145,7 @@ class Index extends Component {
                             detail2: element.detail,
                             service_detail2: element.service_detail,
                         });
-                        if (Platform.OS === 'android' && Global.IsHuawei) {
+                        if (Platform.OS === 'android' && Global.IsPayPal) {
                             that.setState({
                                 price2: element.price,
                             });
@@ -171,7 +171,7 @@ class Index extends Component {
                     that.setState({visible: false})
                 });
             } else {
-                if (Global.IsHuawei) {
+                if (Global.IsPayPal) {
                     that.setState({visible: false})
                 } else {
                     RNIap.consumeAllItemsAndroid().then(r => {
@@ -222,7 +222,7 @@ class Index extends Component {
     }
 
     _pay(product, price, product_type) {
-        if (Global.IsHuawei) {
+        if (Global.IsPayPal) {
             this.setState({
                 product,
                 price,

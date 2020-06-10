@@ -57,7 +57,7 @@ export default class UserInfoUtil {
         let users = object.users;
         if (users != null && users.length > 0) {
           for (let i = 0; i < users.length; i++) {
-            if (users[i].name == username) {
+            if (users[i].name === username) {
               callback(users[i]);
               return;
             }

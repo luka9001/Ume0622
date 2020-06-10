@@ -9,25 +9,18 @@ import {
     TextInput,
     Dimensions,
     TouchableOpacity,
-    SafeAreaView
+    SafeAreaView, DeviceEventEmitter,
 } from 'react-native';
 import path from '../service/config'
 import serverConfig from '../service/config';
 import {Toast, Picker, Modal, Provider} from "@ant-design/react-native";
-
-import MessageUserInfoUtil from "../util/MessageUserInfoUtil";
-import DBHelper from "../util/DBHelper";
 import StorageUtil from "../util/StorageUtil";
-import Global from "../util/Global";
 import CommonTitleBar from '../views/CommonTitleBar';
-
-import JMessage from "jmessage-react-plugin";
-import jMessage from "../service/jMessage";
 import Utils from "../util/Utils";
-
 import LoadingView from "../views/LoadingView";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
-import CountEmitter from "../event/CountEmitter";
+import LogUtil from '../util/LogUtil';
+import IMDB from '../util/IMDB';
 
 const {width} = Dimensions.get('window');
 
@@ -114,21 +107,14 @@ export default class Index extends Component {
                 StorageUtil.set('vip_start_time', userInfo.vip_start_time != null ? userInfo.vip_start_time : 0);
                 StorageUtil.set('coin', userInfo.coin > 0 ? userInfo.coin : 0);
 
+                this.dbInit({user_info:userInfo,access_token:access_token,refresh_token:refresh_token});
+
                 if (userInfo.state === 0) {
                     this.props.navigation.replace('EditWdIndex');
                 } else {
-                    let jUserName = serverConfig.jMessageAccountHeader + userInfo.id;
-                    this.j_register_status = userInfo.j_register_status;
-                    if (userInfo.j_register_status === 0) {
-                        this.registerToJIM(jUserName, jUserName);
-                    } else {
-                        this.loginToJIM(jUserName, jUserName);
-                    }
-
                     serverConfig.sex = userInfo.sex.toString();
                     serverConfig.lifephotos = JSON.parse(userInfo.lifephoto)[0].toString();
                     await AsyncStorage.setItem('lifephotos', userInfo.lifephoto.toString());
-                    // await AsyncStorage.setItem('sex', userInfo.sex.toString());
                     StorageUtil.set('sex', userInfo.sex);
                     this.props.navigation.goBack();
                 }
@@ -140,27 +126,8 @@ export default class Index extends Component {
         }
     };
 
-    // 注册极光IM
-    registerToJIM(username, password) {
-        JMessage.register(
-            {
-                username: username,
-                password: password
-            },
-            () => {
-                // Toast.showShortCenter("注册成功");
-                StorageUtil.set("username", {username: username});
-                // 关闭当前页面
-                // this.props.navigation.goBack();
-                // 跳转到登录界面
-                // this.props.navigation.navigate("Login");
-                this.loginToJIM(username, password);
-            },
-            e => {
-                Toast.info('聊天系统注册失败', 1, undefined, false);
-                // Toast.showShortCenter("注册失败：" + e);
-            }
-        );
+    dbInit(data){
+        IMDB.init(data);
     }
 
     _getUserInfo(access_token) {
@@ -214,112 +181,6 @@ export default class Index extends Component {
             });
             console.log('error:', error);
         });
-    }
-
-    // 登录极光IM服务器
-    loginToJIM(username, password) {
-        // 初始化数据库
-        DBHelper.init(username);
-        // 获取未读好友消息数
-        DBHelper.getUnreadFriendMsgCount(count => {
-            if (count > 0) {
-                // TabConfig.TAB_CONTACT_DOT_COUNT = count;
-            }
-        });
-        this.loginUsername = username;
-        this.loginPassword = password;
-        // 登录极光IM
-        JMessage.login(
-            {
-                username: username,
-                password: password
-            },
-            () => {
-                this.getGroupIds();
-                // 登录IM服务器成功
-                this.getCurrentUserInfo();
-                this.jMessageUpdateMyInfo(serverConfig.name);
-            },
-            e => {
-                // Toast.showShortCenter("登录IM失败：" + e.description);
-                console.log(e);
-            }
-        );
-    }
-
-    jMessageUpdateMyInfo(nickname) {
-        JMessage.updateMyInfo({nickname: nickname},
-            () => {
-                // do something.
-            }, (error) => {
-            })
-    }
-
-    getGroupIds() {
-        JMessage.getGroupIds(
-            (result) => {
-                /**
-                 * result {Array[Number]} 当前用户所加入的群组的groupID的list
-                 */
-                if (result.length > 0) {
-                } else {
-                    jMessage.addMembers().then(function (params) {
-                    }, function (error) {
-                        let description = '';
-
-                        for (let i in error) {
-
-                            description += i + '= ' + error[i] + ';';
-
-                        }
-
-                        console.log('qianyuan', 'error=======?????????' + description);
-                    }).done();
-                }
-            }, (error) => {
-                /**
-                 * error {Object} {code:Number,desc:String}
-                 */
-            }
-        )
-    }
-
-    getCurrentUserInfo() {
-        // JMessage.getMyInfo(info => {
-        //     if (info.username === undefined) {
-        //         // 未登录
-        //     } else {
-        //         // 已登录
-        //         MessageUserInfoUtil.userInfo = info;
-        //     }
-        //     // LogUtil.d("getMyInfo: " + JSON.stringify(info));
-        // });
-        JMessage.getUserInfo(
-            {username: this.loginUsername, appKey: Global.JIMAppKey},
-            info => {
-                // LogUtil.d("getUserInfo: " + JSON.stringify(info));
-                MessageUserInfoUtil.userInfo = info;
-                StorageUtil.set("username", {username: this.loginUsername});
-                StorageUtil.set("password", {password: this.loginPassword});
-                StorageUtil.set("hasLogin", {hasLogin: true},()=>{
-                    //刷新聊天界面
-                    CountEmitter.emit("notifyLogin");
-                });
-                // Toast.info('登录聊天系统成功', 1, undefined, false);
-                // const resetAction = StackActions.reset({
-                //   index: 0,
-                //   actions: [NavigationActions.navigate({ routeName: "Home" })]
-                // });
-                // this.props.navigation.dispatch(resetAction);
-                if (this.j_register_status === 0) {
-                    this.postJMessageStatus();
-                }
-            },
-            error => {
-                // LogUtil.d("getUserInfo, error = " + error);
-                Toast.info('登录聊天系统失败', 1, undefined, false);
-            }
-        );
     }
 
     //更新即时通讯注册状态
