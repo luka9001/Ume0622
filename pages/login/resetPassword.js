@@ -109,7 +109,12 @@ class Index extends Component {
                 let userInfo = await this._getUserInfo(access_token);
 
                 //发送登录成功消息
-                DeviceEventEmitter.emit('appLogin', {user_info:userInfo,access_token:access_token,refresh_token:refresh_token});
+                //TODO::重置密码比较特殊需要重新再调整
+                DeviceEventEmitter.emit('appLogin', {
+                    user_info: userInfo,
+                    access_token: access_token,
+                    refresh_token: refresh_token,
+                });
 
                 serverConfig.name = userInfo.name;
                 serverConfig.state = userInfo.state.toString();
@@ -374,7 +379,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         flex: 7,
-        color:"black"
+        color: 'black',
     },
     textSelect: {
         left: 10,

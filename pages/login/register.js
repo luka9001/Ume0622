@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Input, Button, ListItem, Text} from 'react-native-elements';
-import path from '../service/config'
+import path from '../service/config';
 import {
     View,
     Dimensions,
@@ -11,21 +11,22 @@ import {
     SafeAreaView, DeviceEventEmitter,
 } from 'react-native';
 import {
-    Toast, Picker, Modal, Provider
+    Toast, Picker, Modal, Provider,
 } from '@ant-design/react-native';
 import serverConfig from '../service/config';
-import Utils from "../util/Utils";
-import StorageUtil from "../util/StorageUtil";
+import Utils from '../util/Utils';
+import StorageUtil from '../util/StorageUtil';
 import CommonTitleBar from '../views/CommonTitleBar';
 import LoginApi from '../service/loginApi';
-import WebView from "../views/WebView";
-import LoadingView from "../views/LoadingView";
-import DBHelper from "../util/DBHelper";
-import Global from "../util/Global";
-import MessageUserInfoUtil from "../util/MessageUserInfoUtil";
-import systemInfoApi from "../service/SystemInfoApi";
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import WebView from '../views/WebView';
+import LoadingView from '../views/LoadingView';
+import DBHelper from '../util/DBHelper';
+import Global from '../util/Global';
+import MessageUserInfoUtil from '../util/MessageUserInfoUtil';
+import systemInfoApi from '../service/SystemInfoApi';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import _getUserInfo from './index';
+import IMDB from '../util/IMDB';
 
 const {width} = Dimensions.get('window');
 
@@ -47,16 +48,16 @@ class Index extends Component {
             mobile: '',
             mobilePlaceholder: '请输入手机号码',
             loading: false,
-            email: "",
-            password: "",
-            checkPassword: "",
-            code: "",
-            nickname: "",
-            jusername: "",
-            jpassword: "",
-            jconfirmPwd: "",
+            email: '',
+            password: '',
+            checkPassword: '',
+            code: '',
+            nickname: '',
+            jusername: '',
+            jpassword: '',
+            jconfirmPwd: '',
             country: ['西班牙(+34)'],
-            countryCode: '+'
+            countryCode: '+',
         };
     }
 
@@ -95,7 +96,7 @@ class Index extends Component {
             Toast.info('两次密码填写不一致，请核对', 1, undefined, false);
         } else {
             this.setState({
-                loading: true
+                loading: true,
             });
             // if (this.state.country != '其他') {
             // const code = this.state.country.split('(')[1].split(')')[0];
@@ -120,22 +121,25 @@ class Index extends Component {
                 StorageUtil.set('coin', 0);
 
                 let userInfo = await _getUserInfo(access_token);
-                //发送登录成功消息
-                DeviceEventEmitter.emit('appLogin', {user_info:userInfo,access_token:access_token,refresh_token:refresh_token});
+                this.dbInit({user_info: userInfo, access_token: access_token, refresh_token: refresh_token});
             } else if (response['code'] === '201') {
                 Toast.info('验证码错误,或者过期', 1, undefined, false);
                 this.setState({
-                    loading: false
+                    loading: false,
                 });
             } else {
                 Toast.info('注册失败,昵称或邮件地址重复', 1, undefined, false);
                 this.setState({
-                    loading: false
+                    loading: false,
                 });
             }
 
         }
     };
+
+    dbInit(data) {
+        IMDB.init(data);
+    }
 
     getResister(mobile, password, nickname, code) {
         let url = path.host + '/api/register';
@@ -144,9 +148,9 @@ class Index extends Component {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json;charset=utf-8'
+                'Content-Type': 'application/json;charset=utf-8',
             },
-            body: JSON.stringify(obj)
+            body: JSON.stringify(obj),
         }).then((response) => {
             return response.json();
         }).then((responseJSON) => {
@@ -195,7 +199,7 @@ class Index extends Component {
             Toast.info('请填写Email后再试', 1, undefined, false);
         } else {
             this.setState({
-                loading: true
+                loading: true,
             });
             fetch(url, {
                 method: 'POST',
@@ -204,7 +208,7 @@ class Index extends Component {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    email: email
+                    email: email,
                 }),
             }).then((response) => {
 
@@ -218,7 +222,7 @@ class Index extends Component {
                     Toast.info('获取验证码失败', 1, undefined, false);
                 }
                 this.setState({
-                    loading: false
+                    loading: false,
                 });
             })).catch((error) => {
                 console.log(error);
@@ -240,14 +244,14 @@ class Index extends Component {
     goToPPView() {
         this.props.navigation.navigate('WebView', {
             url: 'https://sites.google.com/site/umeprivacypolicy/',
-            title: '隐私政策'
+            title: '隐私政策',
         });
     }
 
     gotoTCView() {
         this.props.navigation.navigate('WebView', {
             url: 'https://sites.google.com/site/umeprivacypolicy/terms-conditions',
-            title: '服务条款'
+            title: '服务条款',
         });
     }
 
@@ -373,13 +377,13 @@ class Index extends Component {
                                 <View style={{flex: 1, flexDirection: 'column', alignItems: 'center'}}>
                                     <TouchableOpacity activeOpacity={0.6} onPress={() => this.getSmsCode()}>
                                         <View style={styles.loginBtn}>
-                                            <Text style={{color: "#FFFFFF", fontSize: 16}}>获取短信验证码</Text>
+                                            <Text style={{color: '#FFFFFF', fontSize: 16}}>获取短信验证码</Text>
                                         </View>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity activeOpacity={0.6} onPress={() => this.register()}>
                                         <View style={styles.registerBtn}>
-                                            <Text style={{color: "#FFFFFF", fontSize: 16}}>注 册</Text>
+                                            <Text style={{color: '#FFFFFF', fontSize: 16}}>注 册</Text>
                                         </View>
                                     </TouchableOpacity>
                                 </View>
@@ -400,7 +404,7 @@ class Index extends Component {
                     </View>
                 </Provider>
             </SafeAreaView>
-        )
+        );
     }
 }
 
@@ -409,45 +413,45 @@ export default Index;
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        flexDirection: "column"
+        flexDirection: 'column',
     },
     content: {
         flex: 1,
-        flexDirection: "column",
-        alignItems: "center"
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     pwdView: {
-        flexDirection: "column",
-        alignItems: "center",
-        marginTop: 20
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: 20,
     },
     textInput: {
         flex: 7,
-        color:"black"
+        color: 'black',
     },
     textSelect: {
         left: 10,
         flex: 1,
-        color: '#63B8FF'
+        color: '#63B8FF',
     },
     usernameText: {
         marginTop: 10,
         fontSize: 16,
-        textAlign: "center"
+        textAlign: 'center',
     },
     pwdContainer: {
-        flexDirection: "row",
+        flexDirection: 'row',
         height: 50,
-        alignItems: "center",
+        alignItems: 'center',
         marginLeft: 40,
-        marginRight: 40
+        marginRight: 40,
     },
     pwdDivider: {
         width: width - 60,
         marginLeft: 30,
         marginRight: 30,
         height: 1,
-        backgroundColor: "lightgray"
+        backgroundColor: 'lightgray',
     },
     loginBtn: {
         width: width - 40,
@@ -456,9 +460,9 @@ const styles = StyleSheet.create({
         marginTop: 50,
         height: 50,
         borderRadius: 3,
-        backgroundColor: "#63B8FF",
-        justifyContent: "center",
-        alignItems: "center"
+        backgroundColor: '#63B8FF',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     registerBtn: {
         width: width - 40,
@@ -467,14 +471,14 @@ const styles = StyleSheet.create({
         marginTop: 10,
         height: 50,
         borderRadius: 3,
-        backgroundColor: "#63B8FF",
-        justifyContent: "center",
-        alignItems: "center"
+        backgroundColor: '#63B8FF',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     changeAccount: {
         fontSize: 16,
-        color: "#00BC0C",
-        textAlign: "center",
-        marginBottom: 20
-    }
+        color: '#00BC0C',
+        textAlign: 'center',
+        marginBottom: 20,
+    },
 });

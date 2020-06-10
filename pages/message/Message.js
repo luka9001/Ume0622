@@ -25,7 +25,8 @@ import FastImage from 'react-native-fast-image';
 import IMDB from '../util/IMDB';
 import LogUtil from '../util/LogUtil';
 import StorageUtil from '../util/StorageUtil';
-import {Badge} from 'react-native-elements';
+import {Badge, Icon} from 'react-native-elements';
+import AntmModal from '@ant-design/react-native/lib/modal/Modal';
 
 const {width} = Dimensions.get('window');
 
@@ -207,11 +208,11 @@ class Index extends Component {
                                 <Text numberOfLines={1} style={styles.listItemSubtitle}>
                                     {lastMsgContent}
                                 </Text>
-                                {/*{item.unreadCount > 0 ? (*/}
-                                {/*    <View style={styles.redDot}>*/}
-                                {/*        <Text style={styles.redDotText}>{item['unreadCount']}</Text>*/}
-                                {/*    </View>*/}
-                                {/*) : null}*/}
+                                {
+                                    item['to_id'] !== null ? <Icon name={'bell-off-outline'} type={'material-community'}
+                                                                   iconStyle={{backgroundColor: 'white',color: '#999999'}}
+                                                                   size={20}/> : null
+                                }
                             </View>
                         </View>
                     </View>

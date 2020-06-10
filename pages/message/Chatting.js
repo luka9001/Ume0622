@@ -239,7 +239,6 @@ class Index extends Component {
                           }, {text: '取消'}]);
                       }} size={25}/>
             );
-            ``;
         }
         //关闭免打扰
         else {

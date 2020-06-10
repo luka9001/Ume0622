@@ -201,7 +201,7 @@ export default class IMDB {
                 }, (error) => {
                     LogUtil.d('insert into USER_INFO fail: ', error.message);
                 });
-            },
+            }
         );
     }
 
@@ -348,7 +348,7 @@ export default class IMDB {
      * @param callback
      */
     static queryChatHistory(callback) {
-        let sql = `select * from ( select max(m.id),sum(m.tag) as unreadCount,* from ${IM_MSG} m left join ${DISTURB} d on m.from_client_name = d.from_id where m.from_client_name != ${Global.client_name} group by m.from_client_name) order by time desc`;
+        let sql = `select * from ( select max(m.id),sum(m.tag) as unreadCount,* from ${IM_MSG} m left join ${DISTURB} d on m.from_client_name = d.to_id group by m.from_client_name) order by time desc`;
         if (!db) {
             db = IMDB.open();
         }
