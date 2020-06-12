@@ -25,8 +25,8 @@ import FastImage from 'react-native-fast-image';
 import IMDB from '../util/IMDB';
 import LogUtil from '../util/LogUtil';
 import StorageUtil from '../util/StorageUtil';
-import {Badge, Icon} from 'react-native-elements';
-import AntmModal from '@ant-design/react-native/lib/modal/Modal';
+import {Icon} from 'react-native-elements';
+import {BadgeItem} from '../views/BadgeItem';
 
 const {width} = Dimensions.get('window');
 
@@ -84,6 +84,10 @@ class Index extends Component {
         });
         //im消息
         this.onmessage = DeviceEventEmitter.addListener('onmessage', (data) => {
+            this.queryChatHistory();
+        });
+
+        this.setDisturbResult = DeviceEventEmitter.addListener('setDisturbResult', (data) => {
             this.queryChatHistory();
         });
 
@@ -149,24 +153,6 @@ class Index extends Component {
         });
     }
 
-    badgeItem(unreadCount) {
-        if (unreadCount > 99) {
-            return <Badge
-                status="error"
-                value="99+"
-                containerStyle={{position: 'absolute', top: -4, right: -4}}
-            />;
-        } else if (unreadCount > 0) {
-            return <Badge
-                status="error"
-                value={unreadCount}
-                containerStyle={{position: 'absolute', top: -4, right: -4}}
-            />;
-        } else {
-            return null;
-        }
-    }
-
     _renderItem = ({item}) => {
         let type = item['type'];
         let contactId = item['from_client_name'];
@@ -192,7 +178,7 @@ class Index extends Component {
                         {typeof (avatar) != 'string' ? <ImageAdapter path={avatar} width={50} height={50}/> :
                             <View><FastImage style={{width: 50, height: 50, borderRadius: 5}}
                                              source={{uri: avatar, headers: {Authorization: config.access_token}}}/>
-                                {this.badgeItem(item.unreadCount)}
+                                {BadgeItem(item.unreadCount)}
                             </View>
                         }
                         <View style={styles.listItemTextContainer}>
@@ -210,7 +196,10 @@ class Index extends Component {
                                 </Text>
                                 {
                                     item['to_id'] !== null ? <Icon name={'bell-off-outline'} type={'material-community'}
-                                                                   iconStyle={{backgroundColor: 'white',color: '#999999'}}
+                                                                   iconStyle={{
+                                                                       backgroundColor: 'white',
+                                                                       color: '#999999',
+                                                                   }}
                                                                    size={20}/> : null
                                 }
                             </View>
@@ -226,6 +215,7 @@ class Index extends Component {
         this.appLogin.remove();
         this.unread.remove();
         this.onmessage.remove();
+        this.setDisturbResult.remove();
         this.logout.remove();
     }
 

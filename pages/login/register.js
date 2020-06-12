@@ -25,8 +25,8 @@ import Global from '../util/Global';
 import MessageUserInfoUtil from '../util/MessageUserInfoUtil';
 import systemInfoApi from '../service/SystemInfoApi';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import _getUserInfo from './index';
 import IMDB from '../util/IMDB';
+import LogUtil from '../util/LogUtil';
 
 const {width} = Dimensions.get('window');
 
@@ -56,7 +56,7 @@ class Index extends Component {
             jusername: '',
             jpassword: '',
             jconfirmPwd: '',
-            country: ['西班牙(+34)'],
+            country: ['中国(+86)'],
             countryCode: '+',
         };
     }
@@ -120,7 +120,7 @@ class Index extends Component {
                 StorageUtil.set('vip_start_time', 0);
                 StorageUtil.set('coin', 0);
 
-                let userInfo = await _getUserInfo(access_token);
+                let userInfo = await this._getUserInfo(access_token);
                 this.dbInit({user_info: userInfo, access_token: access_token, refresh_token: refresh_token});
             } else if (response['code'] === '201') {
                 Toast.info('验证码错误,或者过期', 1, undefined, false);
@@ -137,8 +137,33 @@ class Index extends Component {
         }
     };
 
+    _getUserInfo(access_token) {
+        let url = path.host + '/api/v1/getuserinfo';
+        return fetch(url, {
+            method: 'POST',
+            headers: {
+                'Authorization': access_token,
+                'Accept': 'application/json',
+                'Content-Type': 'application/json;charset=utf-8',
+            },
+        }).then((response) => response.json()).then((responseJson) => {
+            if (responseJson.code === 200) {
+                return responseJson.data;
+            } else {
+                Toast.info('网络错误！请检查后再试');
+            }
+        }).catch((error) => {
+            console.log('error:', error);
+        });
+    }
+
     dbInit(data) {
-        IMDB.init(data);
+        IMDB.init(data,(result)=>{
+            this.setState({
+                loading: false,
+            });
+            this.props.navigation.replace('EditWdIndex');
+        });
     }
 
     getResister(mobile, password, nickname, code) {

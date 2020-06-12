@@ -9,6 +9,7 @@ import LoadingView from "../views/LoadingView";
 import {ListItem, InputItem} from "../views/ItemView";
 import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import GlobalStyles from "../styles/Styles";
+import ImageResizer from "react-native-image-resizer";
 
 let {width} = Dimensions.get('window');
 
@@ -26,19 +27,31 @@ class Index extends Component {
         SYImagePicker.showImagePicker({
             imageCount: 9,
             isRecordSelected: true,
-            quality: 20,
-            compress: true,
         }, (err, photos) => {
             if (!err) {
-                this.setState({
-                    photos
-                })
+                this.resize(photos);
             } else {
                 console.log(err);
                 // alert('启动失败！请检查相册、相机权限！');
             }
         })
     };
+
+     resize(photos) {
+         let temp = [];
+        photos.map(photo=>{
+            ImageResizer.createResizedImage(photo.uri, 400, 300, 'JPEG', 20)
+                .then(response => {
+                    temp.push(response);
+                    this.setState({
+                        photos:temp
+                    })
+                })
+                .catch(err => {
+                    console.log(err);
+                });
+        });
+    }
 
     submit = () => {
         if (this.state.message.trim() !== '') {

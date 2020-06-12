@@ -25,6 +25,7 @@
     "jpush-react-native": "^2.8.0",
     "lodash": "^4.17.15",
     "moment": "^2.25.3",
+    "prop-types": "^15.7.2",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-elements": "^2.0.0",
@@ -33,6 +34,7 @@
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-iap": "^4.4.8",
+    "react-native-image-resizer": "^1.2.2",
     "react-native-image-zoom-viewer": "^3.0.0",
     "react-native-keyboard-aware-scroll-view": "^0.9.1",
     "react-native-keyboard-tracking-view": "^5.7.0",
@@ -53,7 +55,10 @@
     "react-navigation-material-bottom-tabs": "^2.2.12",
     "react-navigation-stack": "^2.5.0",
     "react-navigation-tabs": "^2.8.13",
-    "recyclerlistview": "^3.0.0"
+    "react-redux": "^7.2.0",
+    "recyclerlistview": "^3.0.0",
+    "redux": "^4.0.5",
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",

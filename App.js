@@ -1,5 +1,5 @@
 import React, {Component, PureComponent} from 'react';
-import {Platform, AppState, DeviceEventEmitter} from 'react-native';
+import {Platform, AppState, DeviceEventEmitter, View,Text,Button,Animated} from 'react-native';
 import {createStackNavigator} from 'react-navigation-stack';
 import {createAppContainer} from 'react-navigation';
 import RouteConfig from './pages/RouteConfig';
@@ -11,20 +11,29 @@ import IMDB from './pages/util/IMDB';
 import Global from './pages/util/Global';
 import LogUtil from './pages/util/LogUtil';
 import StorageUtil from './pages/util/StorageUtil';
-import moment from 'moment';
+import { Provider } from 'react-redux';
+import { connect } from 'react-redux';
+import { change,setMsgUnreadCount } from './pages/actions/actionCreators';
+import store from './pages/store/index';
+import { NavigationContainer } from '@react-navigation/native';
+// import { createStackNavigator } from '@react-navigation/stack';
+// import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 const Navigator = createStackNavigator(RouteConfig, StackNavigatorConfig);
 const AppContainer = createAppContainer(Navigator);
+// const Tab = createBottomTabNavigator();
+// const Stack = createStackNavigator();
 
-export default class App extends PureComponent {
+class App extends PureComponent {
     constructor(props, context) {
         super(props, context);
 
         this.state = {
             hasLogin: false,
             appState: AppState.currentState,
-            ws: {},
+            ws: null,
             client_list: {},
+            count: 100
         };
 
         this.WebSocketConnect = this.WebSocketConnect.bind(this);
@@ -124,6 +133,7 @@ export default class App extends PureComponent {
                 LogUtil.d('未读数据', data);
                 IMDB.insertUnreadMsg(data['data'], (result) => {
                     DeviceEventEmitter.emit('unread', {type: 'unread'});
+                    this.queryMsgUnreadCount();
                 });
                 break;
             }
@@ -135,9 +145,10 @@ export default class App extends PureComponent {
 
                 // DeviceEventEmitter.emit('onmessage', data);
                 break;
-
             case 'singleTalk': {
-                IMDB.insertHistoryMsg(data);
+                IMDB.insertHistoryMsg(data,(result)=>{
+                    this.queryMsgUnreadCount()
+                });
                 DeviceEventEmitter.emit('onmessage', data);
                 break;
             }
@@ -302,8 +313,7 @@ export default class App extends PureComponent {
             //jpush退出
             JPush.deleteAlias({sequence: 1});
             StorageUtil.set('hasLogin', {hasLogin: false});
-            this.state.ws.close();
-            // console.log('这是什么',this.state.ws);
+            this.closeChat();
         });
 
         this.getDisturb = DeviceEventEmitter.addListener('getDisturb', (data) => {
@@ -315,6 +325,13 @@ export default class App extends PureComponent {
             LogUtil.d('发送设置免打扰命令', data);
         });
 
+    }
+
+    closeChat(){
+        if(this.state.ws !== null)
+        {
+            this.state.ws.close();
+        }
     }
 
     startWebSocketConnect() {
@@ -336,7 +353,7 @@ export default class App extends PureComponent {
                         let uid = object.uid;
                         // 初始化数据库
                         IMDB.hasLoginInit(uid);
-
+                        this.queryMsgUnreadCount();
                         this.startWebSocketConnect();
                     }
                 });
@@ -345,6 +362,12 @@ export default class App extends PureComponent {
         this.addListener();
         this.initJpush();
         this.initPermission();
+    }
+
+    queryMsgUnreadCount(){
+        IMDB.queryMsgUnreadCount((result)=>{
+            store.dispatch(setMsgUnreadCount(result['count']))
+        });
     }
 
     removeListener() {
@@ -392,7 +415,21 @@ export default class App extends PureComponent {
 
     render() {
         return (
+            <Provider store={store}>
             <AppContainer/>
+            </Provider>
         );
     }
 }
+
+const mapState = state => ({
+    data: state.data
+});
+
+const mapDispatch = dispatch => ({
+    changeData() {
+        dispatch(change())
+    }
+});
+
+export default App

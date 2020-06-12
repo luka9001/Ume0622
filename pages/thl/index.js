@@ -14,7 +14,7 @@ import {
     Platform,
     Modal as RNModel,
     Animated,
-    FlatList, StatusBar,
+    FlatList,Button,
     SafeAreaView,
 } from 'react-native';
 import {Icon, ListItem} from 'react-native-elements';
@@ -31,14 +31,12 @@ import UserInfoApi from '../service/UserInfoApi';
 import Global from '../util/Global';
 import FastImage from 'react-native-fast-image';
 import StorageUtil from '../util/StorageUtil';
-import DBHelper from '../util/DBHelper';
-import MessageUserInfoUtil from '../util/MessageUserInfoUtil';
-import jMessage from '../service/jMessage';
 import VipLevelView from '../views/VipLevelView';
 import HeaderView from './HeaderView';
 import Utils from '../util/Utils';
-import AntmModal from '@ant-design/react-native/lib/modal/Modal';
-import JPush from 'jpush-react-native';
+import { connect } from 'react-redux';
+import { change,setMsgUnreadCount } from '../actions/actionCreators';
+import store from '../store/index';
 
 let {width} = Dimensions.get('window');
 
@@ -175,24 +173,6 @@ let downloadUrl = {
 const HEADER_MAX_HEIGHT = 300;
 const HEADER_MIN_HEIGHT = Platform.OS === 'ios' ? 60 : 73;
 const HEADER_SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
-
-class Button extends React.Component {
-    render() {
-        return <TouchableOpacity
-            onPress={this.props.onPress}
-            underlayColor='#e4083f'
-            activeOpacity={0.5}
-        >
-            <View
-                style={styles.setBtnStyle}>
-                <Text
-                    style={styles.textStyle}>
-                    {this.props.title}
-                </Text>
-            </View>
-        </TouchableOpacity>;
-    }
-}
 
 class Index extends Component {
     constructor(props) {
@@ -671,31 +651,6 @@ class Index extends Component {
         return (
             <SafeAreaView style={{flex: 1, backgroundColor: '#ffffff'}}>
                 <Provider style={{flex: 1, backgroundColor: '#ffffff'}}>
-                    {/*<Button title="isNotificationEnabled"*/}
-                    {/*        onPress={() =>  JPush.isNotificationEnabled((item) =>{*/}
-                    {/*            console.log("qianyuan",item);*/}
-                    {/*        })*/}
-                    {/*        }/>*/}
-
-                    {/*<Button title="setAlias"*/}
-                    {/*        onPress={() =>  JPush.setAlias({sequence:1,alias:'qy_89'})*/}
-                    {/*        }/>*/}
-
-                    {/*<Button title="getRegistrationID"*/}
-                    {/*        onPress={() =>  JPush.getRegistrationID((id)=>{*/}
-                    {/*            console.log("qianyuan",id);*/}
-                    {/*        })*/}
-                    {/*        }/>*/}
-
-                    {/*<Button title="addLocalNotification"*/}
-                    {/*        onPress={() =>  JPush.addLocalNotification({*/}
-                    {/*            messageID: "123456789",*/}
-                    {/*            title: "title123",*/}
-                    {/*            content: "content123",*/}
-                    {/*            extras: {"key123": "value123"}*/}
-                    {/*        })*/}
-                    {/*        }/>*/}
-
                     {this.state.guide ?
                         <RNModel
                             transparent={true}
@@ -812,8 +767,6 @@ class Index extends Component {
                                                 justifyContent: 'center',
                                             }}
                                         >
-                                            {/*<Image style={{width: width - 150, height: 30, marginTop: 5}}*/}
-                                            {/*       source={require("../images/star.png")}/>*/}
                                             <Text style={{
                                                 textAlign: 'center',
                                                 textAlignVertical: 'center',
@@ -826,7 +779,7 @@ class Index extends Component {
                             </View>
                         </RNModel> : null}
                     <View style={{flex: 1}}>
-                        <TitleBar title={'U&ME'} nav={this.props.navigation} isfilter={true} filter={index => {
+                        <TitleBar title={'缘局'} nav={this.props.navigation} isfilter={true} filter={index => {
                             switch (index) {
                                 case 0:
                                     this.filter = 2;
@@ -994,4 +947,17 @@ class Index extends Component {
     }
 }
 
-export default withNavigationFocus(Index);
+const mapState = state => ({
+    data: state.data,
+    msg_unread_count:state.msg_unread_count
+});
+
+const mapDispatch = dispatch => ({
+    changeData() {
+        dispatch(change())
+    },
+    setMsgUnreadCount(count){
+        dispatch(setMsgUnreadCount(count))
+    }
+});
+export default withNavigationFocus(connect(mapState,mapDispatch) (Index));

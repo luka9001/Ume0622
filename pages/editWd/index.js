@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import moment from "moment";
+import moment from 'moment';
 
 import {
     Image,
@@ -12,29 +12,31 @@ import {
     AsyncStorage,
     TextInput,
     Platform,
-    SafeAreaView
+    SafeAreaView,
 } from 'react-native';
 import {Button, Icon, ListItem} from 'react-native-elements';
 import SYImagePicker from 'react-native-syan-image-picker';
 import {DatePicker, TextareaItem, Picker, Toast, Modal, Provider, Pagination} from '@ant-design/react-native';
-import api from "../service/personalInformationApi";
+import api from '../service/personalInformationApi';
 import serverConfig from '../service/config';
 
 import find from 'lodash/find';
 
 import cache from '../util/cache';
 
-import StorageUtil from "../util/StorageUtil";
-import DBHelper from "../util/DBHelper";
-import MessageUserInfoUtil from "../util/MessageUserInfoUtil";
-import Global from "../util/Global";
+import StorageUtil from '../util/StorageUtil';
+import DBHelper from '../util/DBHelper';
+import MessageUserInfoUtil from '../util/MessageUserInfoUtil';
+import Global from '../util/Global';
 import CommonTitleBar from '../views/CommonTitleBar';
-import Utils from "../util/Utils";
-import LoadingView from "../views/LoadingView";
+import Utils from '../util/Utils';
+import LoadingView from '../views/LoadingView';
 
-import {SelectItem, InputItem, ListItem as CusListItem} from "../views/ItemView";
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
+import {SelectItem, InputItem, ListItem as CusListItem} from '../views/ItemView';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import GlobalStyles from '../styles/Styles';
+import ImageResizer from 'react-native-image-resizer';
+import LogUtil from '../util/LogUtil';
 
 const {width} = Dimensions.get('window');
 
@@ -137,7 +139,7 @@ class Index extends Component {
             check_detail: '',
             //分页
             page: 1,
-            totalPage: 3
+            totalPage: 3,
         };
 
         //初始化身高信息
@@ -168,7 +170,7 @@ class Index extends Component {
                 }
                 if (submmitTag === 0) {
                     that.setState({
-                        submmitText: '申请修改资料'
+                        submmitText: '申请修改资料',
                     });
                 }
                 that.setState({
@@ -347,12 +349,12 @@ class Index extends Component {
 
                 cache.language = _data.language.split(',');
                 that.setState({
-                    languageData: _data.language.split(',')
+                    languageData: _data.language.split(','),
                 });
                 if (_data.nlanguage != null) {
                     cache.nlanguage = _data.nlanguage.split(',');
                     that.setState({
-                        nlanguageData: _data.nlanguage.split(',')
+                        nlanguageData: _data.nlanguage.split(','),
                     });
 
                     // that.setState({
@@ -367,14 +369,14 @@ class Index extends Component {
                     photos.push(photo);
                 });
                 that.setState({
-                    photos
+                    photos,
                 });
             }, function (error) {
 
             }).done();
         } else {
             this.setState({
-                visible: false
+                visible: false,
             });
         }
     }
@@ -566,43 +568,51 @@ class Index extends Component {
                 // isRecordSelected: true,
                 isCrop: true,
                 showCropCircle: false,
-                quality: 10,
-                compress: true,
                 CropW: 400,
                 CropH: 300,
                 // enableBase64: true
             }, (err, photos) => {
                 if (!err && photos.length > 0) {
-                    let temp = this.state.photos;
-                    temp.push(photos[0]);
-                    this.setState({
-                        photos: temp
-                    })
+                    this.resize(photos[0].uri);
                 } else {
                     console.log(err);
                     // alert('启动失败！请检查相册、相机权限！');
                 }
-            })
+            });
         }
     };
+
+    resize(uri) {
+        ImageResizer.createResizedImage(uri, 400, 300, 'JPEG', 20)
+            .then(response => {
+                let temp = this.state.photos;
+                temp.push(response);
+                this.setState({
+                    photos: temp,
+                });
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }
 
     naviToMultiSelect = (id) => {
         this.props.navigation.navigate('MultiSelect', {
             id, dis: (id, items) => {
-                this.disLanguageItem(id, items)
-            }
+                this.disLanguageItem(id, items);
+            },
         });
     };
 
     disLanguageItem(id, items) {
         if (id === 1) {
             this.setState({
-                languageData: items
-            })
+                languageData: items,
+            });
         } else {
             this.setState({
-                nlanguageData: items
-            })
+                nlanguageData: items,
+            });
         }
     }
 
@@ -644,7 +654,7 @@ class Index extends Component {
             nhouse: this.getStatusParam(this.state.nhouse, serverConfig.houseData),
             nlanguage: this.state.nlanguageData.toString(),
             noccupation: this.state.noccupation,
-            nreligion: this.getStatusParam(this.state.nreligion, serverConfig.religion)
+            nreligion: this.getStatusParam(this.state.nreligion, serverConfig.religion),
         };
 
         if (this.state.photos.length < 1) {
@@ -670,16 +680,16 @@ class Index extends Component {
             Modal.alert('提醒', '必填信息需要填写完整', [{text: '我知道了'}]);
         } else {
             this.setState({
-                loading: true
+                loading: true,
             });
             this.setState({
-                visible: true
+                visible: true,
             });
             const that = this;
             api.postPI(params, this.state.photos).then(function (message) {
                 that.setState({
                     loading: false,
-                    visible: false
+                    visible: false,
                 });
                 if (message.code === '200') {
                     cache.language = [];
@@ -687,11 +697,6 @@ class Index extends Component {
                     Toast.info('上传成功');
                     that.initUserInfo(message.data).then(r => {
                     });
-                    // that.props.navigation.goBack();
-
-                    // if (!Utils.isEmpty(that.props.navigation.state.params)) {
-                    //     that.props.navigation.state.params.init();
-                    // }
                     StorageUtil.set('check_status', 0);
                 } else if (message.code === '201') {
                     Modal.alert('未检测到照片文件', '请检查后再次尝试', [{text: '知道了'}]);
@@ -701,7 +706,7 @@ class Index extends Component {
             }, function (error) {
                 that.setState({
                     loading: false,
-                    visible: false
+                    visible: false,
                 });
                 Modal.alert('上传超时!', '您的网络较为缓慢,请检查后再次尝试', [
                     {text: '知道了'},
@@ -712,11 +717,6 @@ class Index extends Component {
 
     async initUserInfo(userInfo) {
         //登陆之后判断是否填写注册资料
-        // let jUserName = serverConfig.jMessageAccountHeader + userInfo.id;
-        // if (userInfo.j_register_status !== 1) {
-        //     // this.registerToJIM(jUserName, jUserName);
-        // }
-
         serverConfig.name = userInfo.name.toString();
         serverConfig.lifephotos = JSON.parse(userInfo.lifephoto)[0].toString();
         serverConfig.state = userInfo.state.toString();
@@ -724,16 +724,12 @@ class Index extends Component {
         await AsyncStorage.setItem('name', userInfo.name.toString());
         await AsyncStorage.setItem('lifephotos', userInfo.lifephoto.toString());
         await AsyncStorage.setItem('state', userInfo.state.toString());
-        // await AsyncStorage.setItem('sex', userInfo.sex.toString());
         StorageUtil.set('sex', userInfo.sex);
-
-        // this.props.navigation.replace('WdIndex');
         this.props.navigation.goBack();
     }
 
     _findItem = itemKey => {
         const items = serverConfig.languageData;
-        // console.log('askdjflkalskdjflajslkfjalksjflkajsdlkfj');
         return find(items, singleItem => singleItem[uniqueKey] === itemKey) || {};
     };
 
@@ -741,7 +737,9 @@ class Index extends Component {
         const actualSelectedItems = optionalSelctedItems;
         return actualSelectedItems.map(singleSelectedItem => {
             const item = this._findItem(singleSelectedItem);
-            if (!item[displayKey]) return null;
+            if (!item[displayKey]) {
+                return null;
+            }
             return (
                 <View
                     style={[
@@ -750,8 +748,8 @@ class Index extends Component {
                             width: item[displayKey].length * 8 + 60,
                             justifyContent: 'center',
                             height: 40,
-                            borderColor: tagBorderColor
-                        }
+                            borderColor: tagBorderColor,
+                        },
                     ]}
                     key={item[uniqueKey]}
                 >
@@ -760,9 +758,9 @@ class Index extends Component {
                             {
                                 flex: 1,
                                 color: tagTextColor,
-                                fontSize: 15
+                                fontSize: 15,
                             },
-                            fontFamily ? {fontFamily} : {}
+                            fontFamily ? {fontFamily} : {},
                         ]}
                         numberOfLines={1}
                     >
@@ -786,14 +784,14 @@ class Index extends Component {
     };
 
     getMaxTime() {
-        return moment().subtract(18, 'years').format('YYYY-MM-DD')
+        return moment().subtract(18, 'years').format('YYYY-MM-DD');
     }
 
     delete(index) {
         let temp = this.state.photos;
         temp.splice(index, 1);
         this.setState({
-            photos: temp
+            photos: temp,
         });
     }
 
@@ -828,7 +826,7 @@ class Index extends Component {
                             source={require('../images/stamp.png')}
                             style={{
                                 width: 25,
-                                height: 25
+                                height: 25,
                             }}
                         />
                         <Text style={{fontSize: 15, textAlign: 'center', color: '#19AD17', marginLeft: 10}}>已审核</Text>
@@ -850,7 +848,7 @@ class Index extends Component {
                                 fontSize: 15,
                                 textAlign: 'center',
                                 color: 'red',
-                                marginLeft: 10
+                                marginLeft: 10,
                             }}>未通过审核，请重新上传资料</Text>
                         </View>
                         <Text style={{
@@ -876,7 +874,7 @@ class Index extends Component {
                                 fontSize: 15,
                                 textAlign: 'left',
                                 color: '#63B8FF',
-                                marginLeft: 10
+                                marginLeft: 10,
                             }}>请亲耐心等待审核结果，我们会在24小时内结束审核，之后即可开启功能\n</Text>
                     </View>
                 );
@@ -900,7 +898,7 @@ class Index extends Component {
                         <CommonTitleBar title={'完善个人信息'} nav={this.props.navigation} rightBtnText={'完成'}
                                         handleRightBtnClick={() =>
                                             Modal.alert('提醒', '确人要上传资料吗', [
-                                                {text: '上传', onPress: () => this.submmit()}, {text: '取消'}
+                                                {text: '上传', onPress: () => this.submmit()}, {text: '取消'},
                                             ])
                                         }/>
                         {this.checkStatusItem()}
@@ -928,7 +926,7 @@ class Index extends Component {
                                         //   iconStyle={image}
                                         // />}
                                         leftElement={<Image style={{width: 20, height: 20}}
-                                                            source={require("../images/image.png")}/>}
+                                                            source={require('../images/image.png')}/>}
                                         title={'请上传真实生活照'}
                                         subtitle={'最少一张,最多六张'}
                                         bottomDivider={true}
@@ -954,16 +952,16 @@ class Index extends Component {
                                                         key={`image-${index}`}
                                                         style={styles.image}
                                                         source={source}
-                                                        resizeMode={"contain"}
+                                                        resizeMode={'contain'}
                                                     />
                                                     <TouchableOpacity style={styles.contentFindView} onPress={() => {
                                                         this.delete(index);
                                                     }}>
                                                         <Image style={{width: 30, height: 30}}
-                                                               source={require("../images/error.png")}/>
+                                                               source={require('../images/error.png')}/>
                                                     </TouchableOpacity>
                                                 </View>
-                                            )
+                                            );
                                         })}
                                     </ScrollView>
                                     <ListItem
@@ -981,7 +979,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.sex}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/sex.png")}/>
+                                                   source={require('../images/sex.png')}/>
                                         </SelectItem>
                                     </Picker>
 
@@ -996,7 +994,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.birthDay}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/birthday-cake.png")}/>
+                                                   source={require('../images/birthday-cake.png')}/>
                                         </SelectItem>
                                     </DatePicker>
 
@@ -1009,11 +1007,11 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.height}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/height.png")}/>
+                                                   source={require('../images/height.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <InputItem leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/map-location.png")}/>}
+                                                                   source={require('../images/map-location.png')}/>}
                                                rightElement={<TextInput
                                                    placeholderTextColor={'lightgray'}
                                                    selectionColor={GlobalStyles.inputSelectedColor}
@@ -1033,7 +1031,7 @@ class Index extends Component {
                                         }
                                     }}
                                                leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/translation.png")}/>}
+                                                                   source={require('../images/translation.png')}/>}
                                                rightElement={<Text
                                                    style={styles.textInput}>{this.state.languageData.length === 0 ? '请选择语言能力' : '修改语言能力'}</Text>}/>
 
@@ -1041,13 +1039,13 @@ class Index extends Component {
                                         style={{
                                             flexDirection: 'row',
                                             flexWrap: 'wrap',
-                                            backgroundColor: 'white'
+                                            backgroundColor: 'white',
                                         }}
                                     >
                                         {this._displaySelectedItems(this.state.languageData)}
                                     </View>
                                     <InputItem leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/placeholder.png")}/>}
+                                                                   source={require('../images/placeholder.png')}/>}
                                                rightElement={<TextInput
                                                    placeholderTextColor={'lightgray'}
                                                    selectionColor={GlobalStyles.inputSelectedColor}
@@ -1057,7 +1055,7 @@ class Index extends Component {
                                                    editable={this.state.birthplaceStatus}
                                                    onChangeText={(text) => {
                                                        this.setState({
-                                                           birthplace: text
+                                                           birthplace: text,
                                                        });
                                                    }}
                                                    style={styles.textInput}
@@ -1072,7 +1070,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.marryStatus}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/wedding-couple.png")}/>
+                                                   source={require('../images/wedding-couple.png')}/>
                                         </SelectItem>
                                     </Picker>
                                 </ScrollView>
@@ -1093,7 +1091,7 @@ class Index extends Component {
                                         subtitleStyle={{color: '#63B8FF'}}
                                     />
                                     <InputItem leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/meeting.png")}/>}
+                                                                   source={require('../images/meeting.png')}/>}
                                                rightElement={<TextInput
                                                    placeholderTextColor={'lightgray'}
                                                    selectionColor={GlobalStyles.inputSelectedColor}
@@ -1103,7 +1101,7 @@ class Index extends Component {
                                                    editable={this.state.occupationStatus}
                                                    onChangeText={(text) => {
                                                        this.setState({
-                                                           occupation: text
+                                                           occupation: text,
                                                        });
                                                    }}
                                                    style={styles.textInput}
@@ -1117,11 +1115,11 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.school}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/books.png")}/>
+                                                   source={require('../images/books.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <InputItem leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/jigsaw.png")}/>}
+                                                                   source={require('../images/jigsaw.png')}/>}
                                                rightElement={<TextInput
                                                    placeholderTextColor={'lightgray'}
                                                    selectionColor={GlobalStyles.inputSelectedColor}
@@ -1132,7 +1130,7 @@ class Index extends Component {
                                                    editable={this.state.hobbyStatus}
                                                    onChangeText={(text) => {
                                                        this.setState({
-                                                           hobby: text
+                                                           hobby: text,
                                                        });
                                                    }}
                                                    style={styles.textInput}
@@ -1147,7 +1145,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.religion}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/jesus.png")}/>
+                                                   source={require('../images/jesus.png')}/>
                                         </SelectItem>
                                     </Picker>
 
@@ -1159,7 +1157,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.income}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/income.png")}/>
+                                                   source={require('../images/income.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1170,7 +1168,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.car}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/car.png")}/>
+                                                   source={require('../images/car.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1181,7 +1179,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.house}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/house.png")}/>
+                                                   source={require('../images/house.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1192,7 +1190,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.smoke}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/smoking.png")}/>
+                                                   source={require('../images/smoking.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1203,7 +1201,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.drink}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/wine-bottle.png")}/>
+                                                   source={require('../images/wine-bottle.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1214,7 +1212,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.baby}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/baby.png")}/>
+                                                   source={require('../images/baby.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <ListItem
@@ -1226,7 +1224,7 @@ class Index extends Component {
                                         //   iconStyle={image}
                                         // />}
                                         leftElement={<Image style={{width: 20, height: 20}}
-                                                            source={require("../images/resume.png")}/>}
+                                                            source={require('../images/resume.png')}/>}
                                         title={'个人介绍'}
                                         bottomDivider={true}
                                     />
@@ -1259,7 +1257,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nsex}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/sex.png")}/>
+                                                   source={require('../images/sex.png')}/>
                                         </SelectItem>
                                     </Picker>
 
@@ -1274,7 +1272,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nbirthDay}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/birthday-cake.png")}/>
+                                                   source={require('../images/birthday-cake.png')}/>
                                         </SelectItem>
                                     </DatePicker>
                                     <Picker
@@ -1286,7 +1284,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nheight}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/height.png")}/>
+                                                   source={require('../images/height.png')}/>
                                         </SelectItem>
                                     </Picker>
 
@@ -1299,12 +1297,12 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nMaxHeight}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/height.png")}/>
+                                                   source={require('../images/height.png')}/>
                                         </SelectItem>
                                     </Picker>
 
                                     <InputItem leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/map-location.png")}/>}
+                                                                   source={require('../images/map-location.png')}/>}
                                                rightElement={
                                                    <TextInput
                                                        placeholderTextColor={'lightgray'}
@@ -1315,7 +1313,7 @@ class Index extends Component {
                                                        editable={this.state.nliveStatus}
                                                        onChangeText={(text) => {
                                                            this.setState({
-                                                               nlive: text
+                                                               nlive: text,
                                                            });
                                                        }}
                                                        style={styles.textInput}
@@ -1328,21 +1326,21 @@ class Index extends Component {
                                         }
                                     }}
                                                leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/translation.png")}/>}
+                                                                   source={require('../images/translation.png')}/>}
                                                rightElement={<Text
                                                    style={styles.textInput}>{this.state.nlanguageData.length === 0 ? '选择对方的语言能力' : '修改对方的语言能力'}</Text>}/>
                                     <View
                                         style={{
                                             flexDirection: 'row',
                                             flexWrap: 'wrap',
-                                            backgroundColor: 'white'
+                                            backgroundColor: 'white',
                                         }}
                                     >
                                         {/* {this._displaySelectedItems(this.props.counter.nlanguage)} */}
                                         {this._displaySelectedItems(this.state.nlanguageData)}
                                     </View>
                                     <InputItem leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/placeholder.png")}/>}
+                                                                   source={require('../images/placeholder.png')}/>}
                                                rightElement={<TextInput
                                                    placeholderTextColor={'lightgray'}
                                                    selectionColor={GlobalStyles.inputSelectedColor}
@@ -1352,14 +1350,14 @@ class Index extends Component {
                                                    editable={this.state.nbirthplaceStatus}
                                                    onChangeText={(text) => {
                                                        this.setState({
-                                                           nbirthplace: text
+                                                           nbirthplace: text,
                                                        });
                                                    }}
                                                    style={styles.textInput}
                                                    underlineColorAndroid="transparent"
                                                />}/>
                                     <InputItem leftElement={<Image style={{width: 20, height: 20}}
-                                                                   source={require("../images/meeting.png")}/>}
+                                                                   source={require('../images/meeting.png')}/>}
                                                rightElement={<TextInput
                                                    placeholderTextColor={'lightgray'}
                                                    selectionColor={GlobalStyles.inputSelectedColor}
@@ -1369,7 +1367,7 @@ class Index extends Component {
                                                    editable={this.state.noccupationStatus}
                                                    onChangeText={(text) => {
                                                        this.setState({
-                                                           noccupation: text
+                                                           noccupation: text,
                                                        });
                                                    }}
                                                    style={styles.textInput}
@@ -1383,7 +1381,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nschool}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/books.png")}/>
+                                                   source={require('../images/books.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1394,7 +1392,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nreligion}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/jesus.png")}/>
+                                                   source={require('../images/jesus.png')}/>
                                         </SelectItem>
                                     </Picker>
 
@@ -1406,7 +1404,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nincome}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/income.png")}/>
+                                                   source={require('../images/income.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1417,7 +1415,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.ncar}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/car.png")}/>
+                                                   source={require('../images/car.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1428,7 +1426,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nhouse}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/house.png")}/>
+                                                   source={require('../images/house.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1439,7 +1437,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nmarryStatus}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/wedding-couple.png")}/>
+                                                   source={require('../images/wedding-couple.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1450,7 +1448,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nsmoke}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/smoking.png")}/>
+                                                   source={require('../images/smoking.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1461,7 +1459,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.ndrink}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/wine-bottle.png")}/>
+                                                   source={require('../images/wine-bottle.png')}/>
                                         </SelectItem>
                                     </Picker>
                                     <Picker
@@ -1472,7 +1470,7 @@ class Index extends Component {
                                     >
                                         <SelectItem text={this.state.nbaby}>
                                             <Image style={{width: 20, height: 20}}
-                                                   source={require("../images/baby.png")}/>
+                                                   source={require('../images/baby.png')}/>
                                         </SelectItem>
                                     </Picker>
 
@@ -1499,7 +1497,7 @@ class Index extends Component {
                         <View style={{
                             height: 1,
                             backgroundColor: Global.pageBackgroundColor,
-                            width: width
+                            width: width,
                         }}/>
                         <View
                             style={{
@@ -1507,15 +1505,15 @@ class Index extends Component {
                                 justifyContent: 'space-between',
                                 alignItems: 'center',
                                 padding: 10,
-                                width: width
+                                width: width,
                             }}>
                             <TouchableOpacity activeOpacity={0.6} onPress={() => this.lastPage()}>
                                 <View
                                     style={[styles.pageBtn, this.state.page === 1 ? {backgroundColor: Global.pageBackgroundColor} : {backgroundColor: 'white'}]}>
                                     <Text style={{
-                                        color: "black",
+                                        color: 'black',
                                         fontSize: 16,
-                                        marginLeft: 0
+                                        marginLeft: 0,
                                     }}>上一页</Text>
                                 </View>
                             </TouchableOpacity>
@@ -1529,9 +1527,9 @@ class Index extends Component {
                                 <View
                                     style={[styles.pageBtn, this.state.page === this.state.totalPage ? {backgroundColor: Global.pageBackgroundColor} : {backgroundColor: 'white'}]}>
                                     <Text style={{
-                                        color: "black",
+                                        color: 'black',
                                         fontSize: 16,
-                                        marginRight: 0
+                                        marginRight: 0,
                                     }}>下一页</Text>
                                 </View>
                             </TouchableOpacity>
@@ -1539,14 +1537,14 @@ class Index extends Component {
                     </View>
                 </Provider>
             </SafeAreaView>
-        )
+        );
     }
 
     lastPage() {
         if (this.state.page !== 1) {
             let currentPage = this.state.page;
             this.setState({
-                page: --currentPage
+                page: --currentPage,
             });
             let currentWidth = currentPage * width;
             this.pagination.scrollTo({x: currentWidth - width, y: 0, animated: true});
@@ -1558,8 +1556,8 @@ class Index extends Component {
             let currentPage = this.state.page;
             this.pagination.scrollTo({x: width * currentPage, y: 0, animated: true});
             this.setState({
-                page: ++currentPage
-            })
+                page: ++currentPage,
+            });
         }
     }
 }
@@ -1567,7 +1565,7 @@ class Index extends Component {
 const styles = StyleSheet.create({
     paginationText: {
         color: 'black',
-        fontSize: 20
+        fontSize: 20,
     },
     pageBtn: {
         height: 50,
@@ -1575,48 +1573,48 @@ const styles = StyleSheet.create({
         borderRadius: 3,
         borderWidth: 1,
         borderColor: Global.pageBackgroundColor,
-        backgroundColor: "#63B8FF",
-        justifyContent: "center",
-        alignItems: "center"
+        backgroundColor: '#63B8FF',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     wrapper: {},
     content: {
         flex: 1,
-        flexDirection: "column",
-        alignItems: "center"
+        flexDirection: 'column',
+        alignItems: 'center',
     },
     pwdView: {
-        flexDirection: "column",
-        alignItems: "center",
-        marginTop: 20
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: 20,
     },
     textInput: {
         textAlign: 'right',
-        fontSize: 16
+        fontSize: 16,
     },
     textSelect: {
         left: 10,
         flex: 1,
-        color: '#63B8FF'
+        color: '#63B8FF',
     },
     usernameText: {
         marginTop: 10,
         fontSize: 16,
-        textAlign: "center"
+        textAlign: 'center',
     },
     pwdContainer: {
-        flexDirection: "row",
+        flexDirection: 'row',
         height: 50,
-        alignItems: "center",
+        alignItems: 'center',
         marginLeft: 20,
-        marginRight: 20
+        marginRight: 20,
     },
     pwdDivider: {
         width: width - 40,
         marginLeft: 20,
         marginRight: 20,
         height: 1,
-        backgroundColor: "lightgray"
+        backgroundColor: 'lightgray',
     },
     loginBtn: {
         width: width - 40,
@@ -1625,24 +1623,24 @@ const styles = StyleSheet.create({
         marginTop: 50,
         height: 50,
         borderRadius: 3,
-        backgroundColor: "#63B8FF",
-        justifyContent: "center",
-        alignItems: "center"
+        backgroundColor: '#63B8FF',
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     changeAccount: {
         fontSize: 16,
-        color: "#00BC0C",
-        textAlign: "center",
-        marginBottom: 20
+        color: '#00BC0C',
+        textAlign: 'center',
+        marginBottom: 20,
     },
     contentFindView: {
         flex: 1,
         // width: width,
-        position: "absolute",
+        position: 'absolute',
         top: 1,
         right: 1,
         justifyContent: 'flex-end',
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     selectedItem: {
         flexDirection: 'row',
@@ -1658,7 +1656,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#F5FCFF',
-        paddingTop: 40
+        paddingTop: 40,
     },
     btn: {
         backgroundColor: '#FDA549',
@@ -1667,18 +1665,18 @@ const styles = StyleSheet.create({
         height: 44,
         paddingHorizontal: 12,
         margin: 5,
-        borderRadius: 22
+        borderRadius: 22,
     },
     scroll: {
         padding: 5,
         flexWrap: 'wrap',
-        flexDirection: 'row'
+        flexDirection: 'row',
     },
     image: {
         margin: 10,
         width: (width - 80) / 3,
         height: (width - 80) / 3,
-        backgroundColor: '#F0F0F0'
+        backgroundColor: '#F0F0F0',
     },
 });
 

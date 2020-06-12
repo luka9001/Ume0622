@@ -43,7 +43,7 @@ export default class Index extends Component {
             mobilePlaceholder: '请输入手机号码',
             password: "",
             loading: false,
-            country: ['西班牙(+34)'],
+            country: ['中国(+86)'],
         };
     }
 

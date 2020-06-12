@@ -40,14 +40,14 @@ const CREATE_IM_MSG_TABLE_SQL =
 const CREATE_USER_INFO_TABLE_SQL = `CREATE TABLE ${USER_INFO} (ID INTEGER PRIMARY KEY,IS_LOGIN INTEGER DEFAULT 0,ACCESS_TOKEN varchar(255) DEFAULT NULL,REFRESH_TOKEN varchar(255) DEFAULT NULL,NAME varchar(255) DEFAULT NULL,SEX INTEGER DEFAULT NULL,STATE INTEGER DEFAULT NULL ,VIP_LEVEL INTEGER NOT NULL DEFAULT 0,VIP_START_TIME timestamp DEFAULT NULL,COIN int(11) NOT NULL DEFAULT 0);`;
 // 数据库工具类
 export default class IMDB {
-    static init(data) {
+    static init(data,callBack) {
         let uid = data['user_info']['id'];
         // 不同用户用不同的数据库
         DB_NAME = `qianyuanim-${uid}.db`;
         DB_DISPLAY_NAME = `QIANYUANIM-${uid}-DB`;
         LogUtil.w(`DB_NAME = ${DB_NAME}, DB_DISPLAY_NAME = ${DB_DISPLAY_NAME}`);
         IMDB.createImMsgTable();
-        IMDB.createUserInfoTable(data);
+        IMDB.createUserInfoTable(data,callBack);
         IMDB.createDisturbTable();
     }
 
@@ -72,6 +72,27 @@ export default class IMDB {
         return db;
     }
 
+    static queryMsgUnreadCount(callBack,errorCallback){
+        const sql = `select sum(tag) as count from ${IM_MSG}`;
+        if (!db) {
+            IMDB.open();
+        }
+        db.transaction(
+            tx => {
+                tx.executeSql(sql, [], (tx, result) => {
+                    LogUtil.d('query table IM_MSG unreadCount success: ', JSON.stringify(result));
+                    let len = result.rows.length;
+                    if (len) {
+                        callBack(result.rows.item(0));
+                    }
+                    }, (error) => {
+                    LogUtil.d('query table IM_MSG unreadCount fail: ', error.message);
+                    errorCallback(error);
+                });
+            },
+        );
+    }
+
 
     // 创建表
     static createImMsgTable() {
@@ -81,15 +102,15 @@ export default class IMDB {
         db.transaction(
             tx => {
                 tx.executeSql(CREATE_IM_MSG_TABLE_SQL, [], (tx, result) => {
-                    LogUtil.d('create table success: ', JSON.stringify(result));
+                    LogUtil.d('create table IM_MSG success: ', JSON.stringify(result));
                 }, (error) => {
-                    LogUtil.d('create table fail: ', error.message);
+                    LogUtil.d('create table IM_MSG fail: ', error.message);
                 });
             },
         );
     }
 
-    static createUserInfoTable(data) {
+    static createUserInfoTable(data,callBack) {
         if (!db) {
             IMDB.open();
         }
@@ -97,10 +118,20 @@ export default class IMDB {
             tx => {
                 tx.executeSql(CREATE_USER_INFO_TABLE_SQL, [], (tx, result) => {
                     LogUtil.d('create table USER_INFO success: ', JSON.stringify(result));
-                    IMDB.insertUserInfo(data);
+                    let userInfo = data['user_info'];
+                    if (userInfo['sex'] === null) {
+                        IMDB.insertUserInfoRedister(data,callBack);
+                    } else {
+                        IMDB.insertUserInfo(data,callBack);
+                    }
                 }, (error) => {
                     LogUtil.d('create table USER_INFO fail: ', error.message);
-                    IMDB.insertUserInfo(data);
+                    let userInfo = data['user_info'];
+                    if (userInfo['sex'] === null) {
+                        IMDB.insertUserInfoRedister(data,callBack);
+                    } else {
+                        IMDB.insertUserInfo(data,callBack);
+                    }
                 });
             },
         );
@@ -173,7 +204,7 @@ export default class IMDB {
         );
     }
 
-    static insertUserInfo(data) {
+    static insertUserInfo(data,callBack) {
         let userInfo = data['user_info'];
         let id = userInfo['id'];
         let state = userInfo['state'];
@@ -198,10 +229,38 @@ export default class IMDB {
                     StorageUtil.set('uid', {uid: id});
                     //TODO::保存数据成功后，发送登录信号
                     DeviceEventEmitter.emit('appLogin', data);
+                    callBack(result);
                 }, (error) => {
                     LogUtil.d('insert into USER_INFO fail: ', error.message);
                 });
-            }
+            },
+        );
+    }
+
+    static insertUserInfoRedister(data,callBack) {
+        let userInfo = data['user_info'];
+        let id = userInfo['id'];
+        let state = userInfo['state'];
+        let name = userInfo['name'];
+        let access_token = data['access_token'];
+        let refresh_token = data['refresh_token'];
+        let sql = `insert into ${USER_INFO} (ID,IS_LOGIN,STATE,NAME,COIN,ACCESS_TOKEN,REFRESH_TOKEN) values (${id},1,${state},'${name}',0,'${access_token}','${refresh_token}');`;
+        if (!db) {
+            IMDB.open();
+        }
+        db.transaction(
+            tx => {
+                tx.executeSql(sql, [], (tx, result) => {
+                    LogUtil.d('insert into USER_INFO success: ', JSON.stringify(result));
+                    StorageUtil.set('hasLogin', {hasLogin: true});
+                    StorageUtil.set('uid', {uid: id});
+                    //TODO::保存数据成功后，发送登录信号
+                    DeviceEventEmitter.emit('appLogin', data);
+                    callBack(result);
+                }, (error) => {
+                    LogUtil.d('insert into USER_INFO fail: ', error.message);
+                });
+            },
         );
     }
 

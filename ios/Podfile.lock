@@ -264,6 +264,8 @@ PODS:
     - React
   - react-native-fetch-blob (0.10.6):
     - React-Core
+  - react-native-image-resizer (1.2.2):
+    - React
   - react-native-safe-area-context (1.0.0):
     - React
   - react-native-segmented-control (1.6.1):
@@ -420,6 +422,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - "react-native-cameraroll (from `../node_modules/@react-native-community/cameraroll`)"
   - react-native-fetch-blob (from `../node_modules/react-native-fetch-blob`)
+  - react-native-image-resizer (from `../node_modules/react-native-image-resizer`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - "react-native-segmented-control (from `../node_modules/@react-native-community/segmented-control`)"
   - "react-native-slider (from `../node_modules/@react-native-community/slider`)"
@@ -521,6 +524,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-community/cameraroll"
   react-native-fetch-blob:
     :path: "../node_modules/react-native-fetch-blob"
+  react-native-image-resizer:
+    :path: "../node_modules/react-native-image-resizer"
   react-native-safe-area-context:
     :path: "../node_modules/react-native-safe-area-context"
   react-native-segmented-control:
@@ -618,6 +623,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 512e560d0e985d0e8c479a54a4e5c147a9c83493
   react-native-cameraroll: ac69828fc43b9dbf92149714fd739577d38e4448
   react-native-fetch-blob: 0cbdf9764c75d9438c162427395f4bc35a857d5a
+  react-native-image-resizer: e794dc2dbd0db0a1062ac5fa425d5df04c1970ca
   react-native-safe-area-context: a346c75f2288147527365ce27b59ca6d38c27805
   react-native-segmented-control: d7c444e5cc5f526da766f8ff24346898b7ac7be5
   react-native-slider: e51492f1264d882a8815b71c5870f8978e52887d

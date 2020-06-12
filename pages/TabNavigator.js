@@ -1,62 +1,34 @@
-import React, {PureComponent} from 'react';
+import React from 'react';
 import {
-    Image,
-    StyleSheet, View,
+    View
 } from 'react-native';
-import {Badge} from 'react-native-elements';
-// import { TabNavigator } from 'react-navigation'
-import {createBottomTabNavigator} from 'react-navigation-tabs';
 import {createMaterialBottomTabNavigator} from 'react-navigation-material-bottom-tabs';
-
-import imageMessageNormal from './images/message_normal.png';
-import imageMessageSelected from './images/message_selected.png';
-import imageHeartsNormal from './images/hearts_normal.png';
-import imageHeartsSelected from './images/hearts_selected.png';
-import imageNoticeNormal from './images/notice_normal.png';
-import imageNoticeSelected from './images/notice_selected.png';
-import imageUserNormal from './images/user_normal.png';
-import imageUserSelected from './images/user_selected.png';
-import imageEarthNormal from './images/worldwide_normal.png';
-import imageEarthSelected from './images/worldwide_selected.png';
 
 import pagesWdIndex from './wd/index';
 import pagesXxIndex from './xx/index';
 import pagesGcIndex from './gc/index';
 import pagesThlIndex from './thl/index';
 import pagesMessage from './message/Message';
-// import {Icon} from 'react-native-elements';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Global from './util/Global';
+import {BadgeItem} from './views/BadgeItem';
+import store from './store/index';
+import { connect } from 'react-redux';
+import { change,setMsgUnreadCount } from './actions/actionCreators';
 
 const MainTab = createMaterialBottomTabNavigator({
     Home: {
         screen: pagesThlIndex,
         navigationOptions: ({navigation, screeProps}) => ({
-            //这里设置StackNavigator属性和一般情况下Tabbar不同页面可能会不同的属性
-
-            //设置StackNavigator属性
-            // header:null,
-            // headerTitle: 'U&ME',
-            // headerStyle: styles.navigator,
-            // headerTitleStyle: styles.navigatorTitle,
-            // gesturesEnabled:true,
-
-            //这里设置Tabbar不同页面可能会不同的属性
-            // tabBarColor: '#6518F4',
             tabBarColor: '#ffffff',
             tabBarVisible: true,
-            tabBarLabel: 'U&ME',
+            tabBarLabel: '缘 局',
             tabBarIcon: (({tintColor, focused}) => {
                 return (
 
-                    focused ? <MaterialCommunityIcons name="heart-multiple" color={'pink'} size={25}/> :
+                    focused ? <MaterialCommunityIcons name="heart-multiple" color={'tomato'} size={25}/> :
                         <MaterialCommunityIcons name={'heart-multiple-outline'}
                                                 color={'gray'}
                                                 size={25}/>
-                    // <Image
-                    //     source={focused ? imageHeartsNormal : imageHeartsSelected}
-                    //     style={styles.tabbarImage}
-                    // />
                 );
             }),
         }),
@@ -64,17 +36,16 @@ const MainTab = createMaterialBottomTabNavigator({
     Gc: {
         screen: pagesGcIndex,
         navigationOptions: ({navigation, screeProps}) => ({
-            // tabBarColor: '#1F65FF',
             tabBarColor: '#ffffff',
             tabBarVisible: true,
             tabBarLabel: '动 态',
             tabBarIcon: (({tintColor, focused}) => {
                 return (
                     focused ? <MaterialCommunityIcons name={'camera-iris'}
-                                                      color={'pink'} size={25}/> :
+                                                            color={'tomato'} size={25}/> :
                         <MaterialCommunityIcons name={'camera-iris'}
                                                 color={'gray'}
-                                                size={25}/>
+                                                      size={25}/>
                 );
             }),
         }),
@@ -82,32 +53,17 @@ const MainTab = createMaterialBottomTabNavigator({
     Message: {
         screen: pagesMessage,
         navigationOptions: ({navigation, screeProps}) => ({
-            // tabBarColor: '#FF69B4',
             tabBarColor: '#ffffff',
             tabBarVisible: true,
             tabBarLabel: '消 息',
             tabBarIcon: (({tintColor, focused}) => {
                 return (
-                    focused ? <MaterialCommunityIcons name={'chat'}
+                    focused ? <View><MaterialCommunityIcons name={'chat'}
                                     size={25}
-                                    color={'pink'}/> :
-                        <MaterialCommunityIcons name={'chat'}
-                              size={25}
-                              color={'gray'}/>
-                    // focused ? <View><Icon name={'chat'}
-                    //                       type={'material-community'}
-                    //                       color={'pink'}
-                    //                       containerStyle={styles.tabbarImage}/>{Global.JMessageCount ? <Badge
-                    //         status="success"
-                    //         containerStyle={{position: 'absolute', top: -4, right: -4}}
-                    //     /> : null}</View> :
-                    //     <View><Icon name={'chat'}
-                    //                 type={'material-community'}
-                    //                 color={'gray'}
-                    //                 containerStyle={styles.tabbarImage}/>{Global.JMessageCount ? <Badge
-                    //         status="success"
-                    //         containerStyle={{position: 'absolute', top: -4, right: -4}}
-                    //     /> : null}</View>
+                                    color={'tomato'}/>{BadgeItem(store.getState().msg_unread_count)}</View> :
+                    <View><MaterialCommunityIcons name={'chat'}
+                                      size={25}
+                                      color={'gray'}/>{BadgeItem(store.getState().msg_unread_count)}</View>
                 );
             }),
         }),
@@ -115,32 +71,15 @@ const MainTab = createMaterialBottomTabNavigator({
     Xx: {
         screen: pagesXxIndex,
         navigationOptions: ({navigation, screeProps}) => ({
-            // tabBarColor: '#006D6A',
             tabBarColor: '#ffffff',
             tabBarVisible: true,
             tabBarLabel: '发 现',
             tabBarIcon: (({tintColor, focused}) => {
                 return (
                     focused ? <MaterialCommunityIcons name={'compass'} size={25}
-                                          color={'pink'}/>:
+                                          color={'tomato'}/>:
                         <MaterialCommunityIcons name={'compass-outline'} size={25}
                                     color={'gray'}/>
-                    // focused ? <View><Icon name={'compass'} type={'material-community'}
-                    //                       color={'pink'}
-                    //                       containerStyle={styles.tabbarImage}/><Badge
-                    //         status="success"
-                    //         containerStyle={{position: 'absolute', top: -4, right: -4}}
-                    //     /></View> :
-                    //     <View><Icon name={'compass-outline'} type={'material-community'}
-                    //                 color={'gray'}
-                    //                 containerStyle={styles.tabbarImage}/><Badge
-                    //         status="success"
-                    //         containerStyle={{position: 'absolute', top: -4, right: -4}}
-                    //     /></View>
-                    // <Image
-                    //     source={focused ? imageNoticeNormal : imageNoticeSelected}
-                    //     style={styles.tabbarImage}
-                    // />
                 )
             }),
         }),
@@ -149,20 +88,15 @@ const MainTab = createMaterialBottomTabNavigator({
         {
             screen: pagesWdIndex,
             navigationOptions: ({navigation, screeProps}) => ({
-                // tabBarColor: '#D02760',
                 tabBarColor: '#ffffff',
                 tabBarVisible: true,
                 tabBarLabel: '我',
                 tabBarIcon: (({tintColor, focused}) => {
                     return (
                         focused ? <MaterialCommunityIcons name={'account'} size={25}
-                                        color={'pink'}/> :
+                                        color={'tomato'}/> :
                             <MaterialCommunityIcons name={'account-outline'} size={25}
                                   color={'gray'}/>
-                        // <Image
-                        //     source={focused ? imageUserNormal : imageUserSelected}
-                        //     style={styles.tabbarImage}
-                        // />
                     )
                 }),
             }),
@@ -172,7 +106,7 @@ const MainTab = createMaterialBottomTabNavigator({
     tabBarPosition: 'bottom', // 设置tabbar的位置，iOS默认在底部，安卓默认在顶部。（属性值：'top'，'bottom')
     swipeEnabled: false, // 是否允许在标签之间进行滑动。
     animationEnabled: false, // 是否在更改标签时显示动画。
-    lazy: true, // 是否根据需要懒惰呈现标签，而不是提前制作，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐改成true哦。
+    lazy: false, // 是否根据需要懒惰呈现标签，而不是提前制作，意思是在app打开的时候将底部标签栏全部加载，默认false,推荐改成true哦。
     initialRouteName: '', // 设置默认的页面组件
     backBehavior: 'none', // 按 back 键是否跳转到第一个Tab(首页)， none 为不跳转
     tabBarOptions: {
@@ -189,19 +123,17 @@ const MainTab = createMaterialBottomTabNavigator({
     inactiveColor: 'gray',
     barStyle: {backgroundColor: '#ffffff'},
 });
-export default MainTab;
-
-const styles = StyleSheet.create({
-    navigatorTitle: {
-        fontSize: 17,
-        color: 'white',
-    },
-    navigator: {
-        backgroundColor: '#d81e06',
-    },
-    tabbarImage: {
-        // width: 25,
-        // height: 25,
-        // marginBottom: -3,
-    },
+const mapState = state => ({
+    data: state.data,
+    msg_unread_count:state.msg_unread_count
 });
+
+const mapDispatch = dispatch => ({
+    changeData() {
+        dispatch(change())
+    },
+    setMsgUnreadCount(count){
+        dispatch(setMsgUnreadCount(count))
+    }
+});
+export default connect(mapState,mapDispatch)(MainTab);

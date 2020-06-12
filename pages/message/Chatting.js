@@ -26,6 +26,8 @@ import {Icon} from 'react-native-elements';
 import IMDB from '../util/IMDB';
 import moment from 'moment';
 import LogUtil from '../util/LogUtil';
+import store from "../store";
+import {setMsgUnreadCount} from "../actions/actionCreators";
 
 let {width} = Dimensions.get('window');
 
@@ -120,8 +122,15 @@ class Index extends Component {
         });
     }
 
+    queryMsgUnreadCount(){
+        IMDB.queryMsgUnreadCount((result)=>{
+            store.dispatch(setMsgUnreadCount(result['count']))
+        });
+    }
+
     queryMsgHistoryByFromClientName() {
         IMDB.queryMsgHistoryByFromClientName(this.chatContactId, (messages) => {
+            this.queryMsgUnreadCount();
             let tags = [];
             let _message = messages.reverse();
             for (let i = 0; i < _message.length; i++) {

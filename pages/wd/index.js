@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import {View, ScrollView, AsyncStorage, Image, SafeAreaView, DeviceEventEmitter} from 'react-native';
-import {Icon, ListItem, Button} from 'react-native-elements';
+import {ListItem, Button} from 'react-native-elements';
 import {Modal, Toast, Provider} from '@ant-design/react-native';
 import serverConfig from '../service/config';
 import cache from '../util/cache';
 import userInfoUtil from '../util/userInfoUtil';
-import DBHelper from "../util/DBHelper";
 import StorageUtil from "../util/StorageUtil";
 import TitleBar from '../views/TitleBar';
 import {withNavigationFocus} from 'react-navigation';
@@ -13,8 +12,6 @@ import LoadingView from "../views/LoadingView";
 import UserInfoApi from "../service/UserInfoApi";
 import Global from "../util/Global";
 import FastImage from 'react-native-fast-image'
-import CountEmitter from "../event/CountEmitter";
-import IMDB from '../util/IMDB';
 
 const url = serverConfig.host;
 
@@ -349,7 +346,7 @@ class Index extends Component {
                                         title={this.state.name}
                                         subtitleStyle={{color: '#FFD700'}}
                                         rightElement={<Button
-                                            title="编辑送福利"
+                                            title="修改个人资料"
                                             type="clear"
                                             onPress={() => {
                                                 // this.setState({
@@ -379,7 +376,6 @@ class Index extends Component {
                                         onPress={() => {
                                             this.props.navigation.navigate('LoginIndex');
                                         }}
-                                        // containerStyle={{marginBottom: 10}}
                                     />
                             }
                             {this.vipView(this.state.sex, this.state.vip_level)}

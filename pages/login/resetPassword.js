@@ -52,7 +52,7 @@ class Index extends Component {
             jusername: '',
             jpassword: '',
             jconfirmPwd: '',
-            country: ['西班牙(+34)'],
+            country: ['中国(+86)'],
             countryCode: '+',
         };
     }
