@@ -16,7 +16,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 import cn.jiguang.plugins.push.JPushModule;
-import io.jchat.android.JMessageReactPackage;
 
 public class MainApplication extends Application implements ReactApplication {
 

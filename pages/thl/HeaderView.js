@@ -178,7 +178,7 @@ export default class HeaderView extends React.Component {
                     <TouchableOpacity activeOpacity={0.6} onPress={() => {
                         this.navToView('PartyListView');
                     }}>
-                        <View style={[styles.loginBtn, {backgroundColor: 'white'}]}>
+                        <View style={[styles.loginBtn]}>
                             <Image style={{width: 25, height: 25}}
                                    source={require("../images/party.png")}/>
                             <Text style={{
@@ -191,7 +191,7 @@ export default class HeaderView extends React.Component {
                     <TouchableOpacity activeOpacity={0.6} onPress={() => {
                         this.navToView('PublishPartyView');
                     }}>
-                        <View style={[styles.loginBtn, {backgroundColor: 'white'}]}>
+                        <View style={[styles.loginBtn, {backgroundColor: 'tomato'}]}>
                             <Image style={{width: 25, height: 25}}
                                    source={require("../images/publish_party.png")}/>
                             <Text style={{
@@ -204,7 +204,7 @@ export default class HeaderView extends React.Component {
                     <TouchableOpacity activeOpacity={0.6} onPress={() => {
                         this.navToView('MyPartyView');
                     }}>
-                        <View style={[styles.loginBtn, {backgroundColor: 'white'}]}>
+                        <View style={[styles.loginBtn, {backgroundColor: 'mediumorchid'}]}>
                             <Image style={{width: 25, height: 25}}
                                    source={require("../images/jester.png")}/>
                             <Text style={{
@@ -217,7 +217,7 @@ export default class HeaderView extends React.Component {
                     <TouchableOpacity activeOpacity={0.6} onPress={() => {
                         this.navToView('GrdtFb');
                     }}>
-                        <View style={[styles.loginBtn, {backgroundColor: 'white'}]}>
+                        <View style={[styles.loginBtn, {backgroundColor: 'pink'}]}>
                             <Image style={{width: 25, height: 25}}
                                    source={require("../images/ins.png")}/>
                             <Text style={{
@@ -234,8 +234,9 @@ export default class HeaderView extends React.Component {
 }
 const styles = StyleSheet.create({
     loginBtn: {
+        padding: 5,
         width: width / 5,
-        borderRadius: 3,
+        borderRadius: 5,
         backgroundColor: "#63B8FF",
         justifyContent: "center",
         alignItems: "center"

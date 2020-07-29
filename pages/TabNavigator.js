@@ -25,10 +25,10 @@ const MainTab = createMaterialBottomTabNavigator({
             tabBarIcon: (({tintColor, focused}) => {
                 return (
 
-                    focused ? <MaterialCommunityIcons name="heart-multiple" color={'tomato'} size={25}/> :
+                    focused ? <MaterialCommunityIcons name="heart-multiple" color={'pink'} size={20}/> :
                         <MaterialCommunityIcons name={'heart-multiple-outline'}
                                                 color={'gray'}
-                                                size={25}/>
+                                                size={20}/>
                 );
             }),
         }),
@@ -42,10 +42,10 @@ const MainTab = createMaterialBottomTabNavigator({
             tabBarIcon: (({tintColor, focused}) => {
                 return (
                     focused ? <MaterialCommunityIcons name={'camera-iris'}
-                                                            color={'tomato'} size={25}/> :
+                                                            color={'pink'} size={20}/> :
                         <MaterialCommunityIcons name={'camera-iris'}
                                                 color={'gray'}
-                                                      size={25}/>
+                                                      size={20}/>
                 );
             }),
         }),
@@ -59,10 +59,10 @@ const MainTab = createMaterialBottomTabNavigator({
             tabBarIcon: (({tintColor, focused}) => {
                 return (
                     focused ? <View><MaterialCommunityIcons name={'chat'}
-                                    size={25}
-                                    color={'tomato'}/>{BadgeItem(store.getState().msg_unread_count)}</View> :
+                                    size={20}
+                                    color={'pink'}/>{BadgeItem(store.getState().msg_unread_count)}</View> :
                     <View><MaterialCommunityIcons name={'chat'}
-                                      size={25}
+                                      size={20}
                                       color={'gray'}/>{BadgeItem(store.getState().msg_unread_count)}</View>
                 );
             }),
@@ -76,9 +76,9 @@ const MainTab = createMaterialBottomTabNavigator({
             tabBarLabel: '发 现',
             tabBarIcon: (({tintColor, focused}) => {
                 return (
-                    focused ? <MaterialCommunityIcons name={'compass'} size={25}
-                                          color={'tomato'}/>:
-                        <MaterialCommunityIcons name={'compass-outline'} size={25}
+                    focused ? <MaterialCommunityIcons name={'compass'} size={20}
+                                          color={'pink'}/>:
+                        <MaterialCommunityIcons name={'compass-outline'} size={20}
                                     color={'gray'}/>
                 )
             }),
@@ -93,9 +93,9 @@ const MainTab = createMaterialBottomTabNavigator({
                 tabBarLabel: '我',
                 tabBarIcon: (({tintColor, focused}) => {
                     return (
-                        focused ? <MaterialCommunityIcons name={'account'} size={25}
-                                        color={'tomato'}/> :
-                            <MaterialCommunityIcons name={'account-outline'} size={25}
+                        focused ? <MaterialCommunityIcons name={'account'} size={20}
+                                        color={'pink'}/> :
+                            <MaterialCommunityIcons name={'account-outline'} size={20}
                                   color={'gray'}/>
                     )
                 }),
