@@ -23,7 +23,7 @@
     "events": "^3.1.0",
     "jcore-react-native": "^1.8.0",
     "jpush-react-native": "^2.8.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.25.3",
     "prop-types": "^15.7.2",
     "react": "16.11.0",
